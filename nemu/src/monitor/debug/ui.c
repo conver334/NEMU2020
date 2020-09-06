@@ -52,8 +52,7 @@ static int cmd_info(char *args) {
 	sscanf(args,"%c",&req);//%d %x
 	if(req=='r'){
 		int i;
-		for( i=0;i<8;i++){
-			
+		for( i=0;i<8;i++){	
 			printf("%s\t%p\t%d\n",regsl[i],&cpu.gpr[i],reg_l(i));
 		}
 	}
@@ -63,7 +62,13 @@ static int cmd_p(char *args) {
 	return -1;
 }
 static int cmd_x(char *args) {
-	return -1;
+	int i,pos,len;
+	sscanf(args,"%d %x",&len,&pos);//%d %x
+	for(i=0;i<len;i++){
+		swaddr_read(pos+i,4);
+	}
+	printf("\n");
+	return 0;
 }
 static int cmd_w(char *args) {
 	return -1;
