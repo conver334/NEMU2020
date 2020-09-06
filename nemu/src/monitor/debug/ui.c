@@ -47,7 +47,16 @@ static int cmd_si(char *args) {
 	return 0;
 }
 static int cmd_info(char *args) {
-	return -1;
+	const char *regsl[] = {"eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi"};
+	char req;
+	sscanf(args,"%c",&req);//%d %x
+	if(req=='r'){
+		int i;
+		for( i=0;i<8;i++){
+			printf("%s\r%p\r%d",regsl[i],&cpu.gpr[i],reg_l(i));
+		}
+	}
+	return 0;
 }
 static int cmd_p(char *args) {
 	return -1;
