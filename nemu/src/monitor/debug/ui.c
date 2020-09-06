@@ -65,7 +65,7 @@ static int cmd_x(char *args) {
 	int i,pos,len;
 	sscanf(args,"%d %x",&len,&pos);//%d %x
 	for(i=0;i<len;i++){
-		swaddr_read(pos+i,4);
+		printf("%08x",swaddr_read(pos+i,4));
 	}
 	printf("\n");
 	return 0;
