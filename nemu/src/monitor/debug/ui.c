@@ -66,13 +66,12 @@ static int cmd_x(char *args) {
 	sscanf(args,"%d %x",&len,&pos);//%d %x
 	for(i=0;i<len;i+=4){
 		int j;
-		printf("%x \n",swaddr_read(pos+i,1));
+		//printf("%x \n",swaddr_read(pos+i,1));
 		for( j=0;j<4;j++){
 			printf("%02x ",swaddr_read(pos+j+i,1));
 		}
 		printf("\n");
 	}
-	printf("\n");
 	return 0;
 }
 static int cmd_w(char *args) {
