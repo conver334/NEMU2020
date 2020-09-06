@@ -31,11 +31,39 @@ static int cmd_c(char *args) {
 	cpu_exec(-1);
 	return 0;
 }
-
 static int cmd_q(char *args) {
 	return -1;
 }
-
+static int cmd_si(char *args) {
+	if(args == NULL) {
+		/* no argument given */
+		cpu_exec(1);
+	}
+	else {
+		int num;
+		sscanf(args,"%d",&num);//%d %x
+		cpu_exec(num);
+	}
+	return 0;
+}
+static int cmd_info(char *args) {
+	return -1;
+}
+static int cmd_p(char *args) {
+	return -1;
+}
+static int cmd_x(char *args) {
+	return -1;
+}
+static int cmd_w(char *args) {
+	return -1;
+}
+static int cmd_d(char *args) {
+	return -1;
+}
+static int cmd_bt(char *args) {
+	return -1;
+}
 static int cmd_help(char *args);
 
 static struct {
@@ -46,7 +74,13 @@ static struct {
 	{ "help", "Display informations about all supported commands", cmd_help },
 	{ "c", "Continue the execution of the program", cmd_c },
 	{ "q", "Exit NEMU", cmd_q },
-
+	{ "si", "Exit NEMU", cmd_si },
+	{ "info", "Exit NEMU", cmd_info },
+	{ "p", "Exit NEMU", cmd_p },
+	{ "x", "Exit NEMU", cmd_x },
+	{ "w", "Exit NEMU", cmd_w },
+	{ "d", "Exit NEMU", cmd_d },
+	{ "bt", "Exit NEMU", cmd_bt },
 	/* TODO: Add more commands */
 
 };
