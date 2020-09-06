@@ -53,6 +53,7 @@ static int cmd_info(char *args) {
 	if(req=='r'){
 		int i;
 		for( i=0;i<8;i++){
+			printf("haha\n");
 			printf("%s\r%p\r%d",regsl[i],&cpu.gpr[i],reg_l(i));
 		}
 	}
