@@ -67,7 +67,7 @@ static int cmd_x(char *args) {
 	for(i=0;i<len;i+=4){
 		int j;
 		for( j=3;j>=0;j--){
-			printf("%02x",swaddr_read(pos+i,1));
+			printf("%02x",swaddr_read(pos+j,1));
 		}
 	}
 	printf("\n");
