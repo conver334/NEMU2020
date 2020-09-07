@@ -88,7 +88,7 @@ static bool make_token(char *e) {
 				/* TODO: Now a new token is recognized with rules[i]. Add codes
 				 * to record the token in the array `tokens'. For certain types
 				 * of tokens, some extra actions should be performed.
-				 * EQ='=',NUM=601, ALP=602,LK='(',RK=')',MU='*',MI='-',AD='+',EXCE='/'
+				 * NOTYPE = 256, EQ=259,NUM=257, ALP=258,LK='(',RK=')',MU='*',MI='-',AD='+',EXCE='/'
 				 */
 
 				switch(rules[i].token_type) {
@@ -99,10 +99,11 @@ static bool make_token(char *e) {
 							  break;
 					case ALP: tokens[++nr_token].type=rules[i].token_type;
 							if(substr_len<=32){
-								  strncpy(tokens[nr_token].str,substr_start,substr_len);
-								  
+								  strncpy(tokens[nr_token].str,substr_start,substr_len);			  
 							}	
 							break;
+					case NOTYPE:break;
+					case EQ:break;
 					default: tokens[++nr_token].type=rules[i].token_type;
 				}
 				tokens[nr_token].str[substr_len]='\0';
