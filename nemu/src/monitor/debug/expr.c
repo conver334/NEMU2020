@@ -7,7 +7,7 @@
 #include <regex.h>
 #define typ(index) tokens[index].type
 enum {
-	NOTYPE = 256, EQ='=',NUM=257, ALP=258,LK='(',RK=')',MU='*',MI='-',AD='+',EXCE='/'
+	NOTYPE = 256, EQ=259,NUM=257, ALP=258,LK='(',RK=')',MU='*',MI='-',AD='+',EXCE='/'
 
 	/* TODO: Add more token types */
 
@@ -16,6 +16,7 @@ int ope_rank[300];
 void init(){
 	ope_rank['*']=3,ope_rank['/']=3;
 	ope_rank['+']=2,ope_rank['-']=2;
+	ope_rank[257]=300,ope_rank[258]=300,ope_rank[256]=300;ope_rank[259]=300;
 }
 static struct rule {
 	char *regex;
