@@ -93,7 +93,8 @@ static bool make_token(char *e) {
 				switch(rules[i].token_type) {
 					case NUM: tokens[++nr_token].type=rules[i].token_type;
 							  if(substr_len<=32){
-								  strcpy(tokens[nr_token].str,substr_start);
+								  strncpy(tokens[nr_token].str,substr_start,substr_len);
+								  //strcpy();
 							  }
 							  break;
 					// case EQ: tokens[++nr_token].type=rules[i].token_type;
