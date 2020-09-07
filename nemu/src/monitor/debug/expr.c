@@ -94,8 +94,6 @@ static bool make_token(char *e) {
 					case NUM: tokens[++nr_token].type=rules[i].token_type;
 							  if(substr_len<=32){
 								  strncpy(tokens[nr_token].str,substr_start,substr_len);
-								  //strcpy();
-								  printf("%d : %s\n",nr_token,tokens[nr_token].str);
 							  }
 							  break;
 					// case EQ: tokens[++nr_token].type=rules[i].token_type;
@@ -166,13 +164,10 @@ int eval(int p,int q){
 		global_success=false;
 	}
 	else if(p==q){
-		printf("%d : %s\n",p,tokens[q].str);
 		int num=0, len=strlen(tokens[q].str), i;
-
 		for( i=0;i<len;i++){
 			num=num*10+tokens[q].str[i]-'0';
 		}
-		printf("%d \n",num);
 		return num;
 	}
 	else if(check_parentheses(p,q) == true){
@@ -197,10 +192,6 @@ uint32_t expr(char *e, bool *success) {
 	if(!make_token(e)) {
 		*success = false;
 		return 0;
-	}
-	int i=1;
-	for(;i<=nr_token;i++){
-		printf("%d : %s\n",i,tokens[i].str);
 	}
 	int ans=eval(1,nr_token);
 	if(global_success){
