@@ -5,14 +5,18 @@
  */
 #include <sys/types.h>
 #include <regex.h>
-
+#define typ(index) tokens[index].type
 enum {
-	NOTYPE = 256, EQ,NUM,LK,RK,MU,MI
+	NOTYPE = 256, EQ='=',NUM=257, ALP=258,LK='(',RK=')',MU='*',MI='-',AD='+',EXCE='/'
 
 	/* TODO: Add more token types */
 
 };
-
+int ope_rank[300];
+void init(){
+	ope_rank['*']=3,ope_rank['/']=3;
+	ope_rank['+']=2,ope_rank['-']=2;
+}
 static struct rule {
 	char *regex;
 	int token_type;
@@ -23,13 +27,15 @@ static struct rule {
 	 */
 
 	{" +",	NOTYPE},				// spaces
-	{"\\+", '+'},					// plus
+	{"\\+", AD},					// plus
 	{"==", EQ},						// equal
 	{"[0-9]+",NUM},
 	{"\\(",LK},
 	{"\\)",RK},
 	{"\\*",MU},
-	{"-",MI}
+	{"-",MI},
+	{"[A-Za-z]",ALP},
+	{"/",EXCE}
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
@@ -81,12 +87,28 @@ static bool make_token(char *e) {
 				/* TODO: Now a new token is recognized with rules[i]. Add codes
 				 * to record the token in the array `tokens'. For certain types
 				 * of tokens, some extra actions should be performed.
+				 * EQ='=',NUM=601, ALP=602,LK='(',RK=')',MU='*',MI='-',AD='+',EXCE='/'
 				 */
 
-				// switch(rules[i].token_type) {
-
-				// 	//default: panic("please implement me");
-				// }
+				switch(rules[i].token_type) {
+					case NUM: tokens[++nr_token].type=rules[i].token_type;
+							  if(substr_len<=32){
+								  strcpy(tokens[nr_token].str,substr_start);
+							  }
+							  break;
+					// case EQ: tokens[++nr_token].type=rules[i].token_type;
+					// case LK: tokens[++nr_token].type=rules[i].token_type;
+					// case RK: tokens[++nr_token].type=rules[i].token_type;
+					// case MU: tokens[++nr_token].type=rules[i].token_type;
+					// case MI: tokens[++nr_token].type=rules[i].token_type;
+					// case AD: tokens[++nr_token].type=rules[i].token_type;
+					// case EXCE: tokens[++nr_token].type=rules[i].token_type;
+					case ALP: tokens[++nr_token].type=rules[i].token_type;
+							if(substr_len<=32){
+								  strcpy(tokens[nr_token].str,substr_start);
+							}	
+					default: tokens[++nr_token].type=rules[i].token_type;
+				}
 
 				break;
 			}
@@ -100,15 +122,82 @@ static bool make_token(char *e) {
 
 	return true; 
 }
-
+bool global_success=true;
+int getdominant(int p, int q){
+	int nowmin=1000,nowp=-1, i;
+	for( i = p; i <= q; i++){
+		if(typ(i) == '('){
+			while(typ(i) != ')') i++;
+			continue;
+		}
+		if(typ(i) <= nowmin){
+			nowmin = typ(i);
+			nowp = i;
+		}
+	}
+	return nowp;
+}
+bool exp_legi(int p, int q){
+	int i,tail=0;
+	for( i = p; i <= q; i++){
+		if(typ(i) == '(')tail++;
+		else if(typ(i) == ')'){
+			if(tail==0)return 0;
+			else tail--;
+		}
+	}
+	return 1;
+}
+bool check_parentheses(int p, int q){
+	if(!exp_legi(p,q)){
+		global_success = false;//illegal expression
+	}
+	else {
+		if(typ(p)!='('||typ(q)!=')')return 0;
+		if(exp_legi(p+1,q-1))return 1;
+	}
+	return 0;
+}
+int eval(int p,int q){
+	if(p>q){
+		return -1; 
+	}
+	else if(p==q){
+		int num=0, len=strlen(tokens[q].str), i;
+		for( i=len-1;i>=0;i--){
+			num=num*10+tokens[q].str[i]-'0';
+		}
+		return num;
+	}
+	else if(check_parentheses(p,q) == true){
+		return eval(p+1,q-1);
+	}
+	else {
+		int op,val1,val2;
+		op=getdominant(p,q);
+		val1=eval(p,op-1);
+		val2=eval(op+1,q);
+		switch(typ(op)){
+			case '+':return val1+val2;
+			case '-':return val1-val2;
+			case '*':return val1*val2;
+			case '/':return val1/val2;
+			default:assert(0);// dont know assert
+		}
+	}
+}
 uint32_t expr(char *e, bool *success) {
 	if(!make_token(e)) {
 		*success = false;
 		return 0;
 	}
-
-	/* TODO: Insert codes to evaluate the expression. */
-	panic("please implement me");
+	int ans=eval(1,nr_token);
+	if(global_success){
+		printf("The ans of expr is %d",ans);
+	}
+	else {
+		*success = false;
+	}	
 	return 0;
 }
 
