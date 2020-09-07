@@ -124,8 +124,8 @@ int getdominant(int p, int q){
 			while(typ(i) != ')') i++;
 			continue;
 		}
-		if(typ(i) <= nowmin){
-			nowmin = typ(i);
+		if(ope_rank[typ(i)] <= nowmin){
+			nowmin = ope_rank[typ(i)];
 			nowp = i;
 		}
 	}
@@ -140,7 +140,8 @@ bool exp_legi(int p, int q){
 			else tail--;
 		}
 	}
-	return 1;
+	if(tail == 0)return 1;
+	return 0;
 }
 bool check_parentheses(int p, int q){
 	if(!exp_legi(p,q)){
@@ -161,6 +162,7 @@ int eval(int p,int q){
 		for( i=0;i<len;i++){
 			num=num*10+tokens[q].str[i]-'0';
 		}
+		printf("hahah2  %d\n",num);
 		return num;
 	}
 	else if(check_parentheses(p,q) == true){
@@ -186,6 +188,7 @@ uint32_t expr(char *e, bool *success) {
 		*success = false;
 		return 0;
 	}
+	init();
 	int ans=eval(1,nr_token);
 	if(global_success){
 		printf("The ans of expr is %d\n",ans);
