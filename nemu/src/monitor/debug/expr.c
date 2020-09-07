@@ -163,13 +163,13 @@ bool check_parentheses(int p, int q){
 }
 int eval(int p,int q){
 	if(p>q){
-		return -1; 
+		global_success=false;
 	}
 	else if(p==q){
 		printf("%d : %s\n",p,tokens[q].str);
 		int num=0, len=strlen(tokens[q].str), i;
 
-		for( i=len-1;i>=0;i--){
+		for( i=0;i<len;i++){
 			num=num*10+tokens[q].str[i]-'0';
 		}
 		printf("%d \n",num);
@@ -188,9 +188,10 @@ int eval(int p,int q){
 			case '-':return val1-val2;
 			case '*':return val1*val2;
 			case '/':return val1/val2;
-			default:assert(0);// dont know assert
+			default:global_success=false; // dont know assert
 		}
 	}
+	return 0;
 }
 uint32_t expr(char *e, bool *success) {
 	if(!make_token(e)) {
