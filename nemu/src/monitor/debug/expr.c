@@ -163,11 +163,12 @@ int eval(int p,int q){
 		return -1; 
 	}
 	else if(p==q){
+		printf("%d : %s",p,tokens[q].str);
 		int num=0, len=strlen(tokens[q].str), i;
 		for( i=len-1;i>=0;i--){
 			num=num*10+tokens[q].str[i]-'0';
 		}
-		printf("%d ",num);
+		printf("%d \n",num);
 		return num;
 	}
 	else if(check_parentheses(p,q) == true){
