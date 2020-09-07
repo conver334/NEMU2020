@@ -168,7 +168,7 @@ int eval(int p,int q){
 		for( i=0;i<len;i++){
 			num=num*10+tokens[q].str[i]-'0';
 		}
-		printf("hahah2  %d\n",num);
+		// printf("hahah2  %d\n",num);
 		return num;
 	}
 	else if(check_parentheses(p,q) == true){
@@ -183,7 +183,7 @@ int eval(int p,int q){
 			case '+':return val1+val2;
 			case '-':return val1-val2;
 			case '*':return val1*val2;
-			case '/': printf("hahahah1:  %d\n",(val1/val2));  return (val1/val2);
+			case '/':return (val1/val2);
 			default:global_success=false; // dont know assert
 		}
 	}
