@@ -96,13 +96,6 @@ static bool make_token(char *e) {
 								  strncpy(tokens[nr_token].str,substr_start,substr_len);
 							  }
 							  break;
-					// case EQ: tokens[++nr_token].type=rules[i].token_type;
-					// case LK: tokens[++nr_token].type=rules[i].token_type;
-					// case RK: tokens[++nr_token].type=rules[i].token_type;
-					// case MU: tokens[++nr_token].type=rules[i].token_type;
-					// case MI: tokens[++nr_token].type=rules[i].token_type;
-					// case AD: tokens[++nr_token].type=rules[i].token_type;
-					// case EXCE: tokens[++nr_token].type=rules[i].token_type;
 					case ALP: tokens[++nr_token].type=rules[i].token_type;
 							if(substr_len<=32){
 								  strncpy(tokens[nr_token].str,substr_start,substr_len);
