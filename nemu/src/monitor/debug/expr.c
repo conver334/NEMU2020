@@ -167,6 +167,7 @@ int eval(int p,int q){
 		for( i=len-1;i>=0;i--){
 			num=num*10+tokens[q].str[i]-'0';
 		}
+		printf("%d ",num);
 		return num;
 	}
 	else if(check_parentheses(p,q) == true){
@@ -193,11 +194,10 @@ uint32_t expr(char *e, bool *success) {
 	}
 	int ans=eval(1,nr_token);
 	if(global_success){
-		printf("The ans of expr is %d",ans);
+		printf("The ans of expr is %d\n",ans);
 	}
 	else {
 		*success = false;
 	}	
 	return 0;
 }
-
