@@ -175,7 +175,7 @@ int eval(int p,int q){
 			case '+':return val1+val2;
 			case '-':return val1-val2;
 			case '*':return val1*val2;
-			case '/':return val1/val2;
+			case '/': printf("hahahah1:  %d\n",val1/val2);  return (val1/val2);
 			default:global_success=false; // dont know assert
 		}
 	}
