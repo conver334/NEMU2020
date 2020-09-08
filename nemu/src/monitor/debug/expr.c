@@ -42,7 +42,7 @@ static struct rule {
 	{" +",	NOTYPE},				// spaces
 	{"\\+", AD},					// plus
 	{"==", EQ},						// equal
-	{"\\w",NUM},
+	{"[0-9A-Za-z]+",NUM},
 	{"\\(",LK},
 	{"\\)",RK},
 	{"\\*",MU},
