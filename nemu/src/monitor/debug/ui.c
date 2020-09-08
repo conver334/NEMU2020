@@ -56,6 +56,9 @@ static int cmd_info(char *args) {
 			printf("%s\t%p\t%d\n",regsl[i],&cpu.gpr[i],reg_l(i));
 		}
 	}
+	if(req=='w'){
+		point_print();
+	}
 	return 0;
 }
 static int cmd_p(char *args) {
@@ -80,15 +83,29 @@ static int cmd_x(char *args) {
 	}
 	return 0;
 }
+int total_watch = 0;
 static int cmd_w(char *args) {
-	return -1;
+	WP* newwp = new_wp();
+	bool exp_success=true;
+	if(newwp!=NULL){
+		newwp->posi = args;
+		newwp->value = expr(args,&exp_success);
+		newwp->NO = ++total_watch;
+		printf("Hardware watchpoint%d : %s",total_watch,args);
+	}
+	return 0;
 }
 static int cmd_d(char *args) {
-	return -1;
+	int rank;
+	sscanf(args,"%d",&rank);
+	if(!point_delete(rank)){
+		printf("No breakpoint number %d.",rank);
+	}
+	return 0;
 }
-static int cmd_bt(char *args) {
-	return -1;
-}
+// static int cmd_bt(char *args) {
+// 	return -1;
+// }
 static int cmd_help(char *args);
 
 static struct {
@@ -105,7 +122,7 @@ static struct {
 	{ "x", "Exit NEMU", cmd_x },
 	{ "w", "Exit NEMU", cmd_w },
 	{ "d", "Exit NEMU", cmd_d },
-	{ "bt", "Exit NEMU", cmd_bt },
+	// { "bt", "Exit NEMU", cmd_bt },
 	/* TODO: Add more commands */
 
 };

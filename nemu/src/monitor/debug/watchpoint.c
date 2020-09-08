@@ -9,6 +9,8 @@ WP* new_wp(){
 	if(free_ == NULL)assert(0);
 	WP* fir_free = free_;
 	free_ = free_->next;
+	fir_free->next = head;
+	head = fir_free;
 	return fir_free;
 }
 void free_wp(WP *wp){
@@ -26,7 +28,42 @@ void init_wp_pool() {
 	head = NULL;
 	free_ = wp_pool;
 }
-
+bool run_wp(){
+	WP* i = head;
+	bool exp_success=true, change=false;
+	int value_now;
+	for(; i != NULL; i = i->next){
+		value_now = expr(i->posi,&exp_success) ;
+		if(value_now != i->value){
+			printf("Hardware watchpoint %d: %s\n",i->NO,i->posi);
+			printf("Old value = %d\nNew value = %d\n",i->value,value_now);
+			i->value = value_now;
+			change = true;
+		}
+	}
+	return change;
+}
+bool point_delete(int rank){
+	if(head == NULL)return 0;
+	if(head -> NO == rank){
+		head=head->next;return 1;
+	}
+	WP* fr= head; 
+	WP* i = head->next;
+	for(; i != NULL;fr = i, i = i->next){
+		if( i->NO == rank){
+			fr->next = i->next;
+			return 1;
+		}
+	}
+	return 0;
+}
+void point_print(){
+	WP* i = head;
+	for(; i != NULL; i = i->next){
+		printf("Hardware watchpoint %d: %s = %d\n",i->NO,i->posi,i->value);
+	}
+}
 /* TODO: Implement the functionality of watchpoint */
 
 
