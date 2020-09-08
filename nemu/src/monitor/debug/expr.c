@@ -6,19 +6,26 @@
 #include <sys/types.h>
 #include <regex.h>
 #define typ(index) tokens[index].type
-enum {
-	NOTYPE = 256, EQ=259,NUM=257,REG=258,LK='(',RK=')',MU='*',MI='-',AD='+',EXCE='/',DEREF=270,NEG=271
-
+#define tstr(index) tokens[index].str
+enum {	
+	NOTYPE = 256, REG=258,DEC=257,HEX=256,
+	LK='(',RK=')',
+	DEREF=260,NEG=261,NOT='!',
+	MU='*',EXCE='/',MI='-',AD='+',
+	EQ='=',NEQ=271,
+	AND='&',OR='|'
 	/* TODO: Add more token types */
-
 };
 int ope_rank[300];
 int quan[300];
 void init(){
-	ope_rank['*']=3,ope_rank['/']=3;
-	ope_rank['+']=2,ope_rank['-']=2;
-	ope_rank[257]=300,ope_rank[258]=300,ope_rank[256]=300;ope_rank[259]=300;
-	ope_rank[270]=150,ope_rank[271]=151;
+	ope_rank[DEC]=0,ope_rank[HEX]=0,ope_rank[REG]=0;
+	ope_rank[LK]=2,ope_rank[RK]=2;
+	ope_rank[DEREF]=3,ope_rank[NEG]=3,ope_rank[NOT]=3,
+	ope_rank['*']=4,ope_rank['/']=4;
+	ope_rank['+']=5,ope_rank['-']=5;
+	ope_rank['=']=6, ope_rank[NEQ]=6;
+	ope_rank['&']=7,ope_rank['|']=7;
 	int i='0';
 	for(; i < 58; i++){
 		quan[i]=i-48;
@@ -42,7 +49,8 @@ static struct rule {
 	{" +",	NOTYPE},				// spaces
 	{"\\+", AD},					// plus
 	{"==", EQ},						// equal
-	{"[0-9A-Za-z]+",NUM},
+	{"[0-9A-Za-z]+",HEX},
+	{"[0-9]+",DEC},
 	{"\\(",LK},
 	{"\\)",RK},
 	{"\\*",MU},
@@ -104,18 +112,14 @@ static bool make_token(char *e) {
 				 */
 
 				switch(rules[i].token_type) {
-					case NUM: tokens[++nr_token].type=rules[i].token_type;
+					case NOTYPE:break;
+					case EQ:break;
+					default: tokens[++nr_token].type=rules[i].token_type;
 							  if(substr_len<=32){
 								  strncpy(tokens[nr_token].str,substr_start,substr_len);  
 								  tokens[nr_token].str[substr_len]='\0';
 							  }
-							  break;
-					case NOTYPE:break;
-					case EQ:break;
-					default: tokens[++nr_token].type=rules[i].token_type;
-					tokens[nr_token].str[substr_len]='\0';
 				}
-				
 				break;
 			}
 		}
@@ -130,13 +134,9 @@ static bool make_token(char *e) {
 }
 bool global_success=true;
 int getdominant(int p, int q){
-	int nowmin=1000,nowp=-1, i;
+	int nowmin=-1,nowp=-1, i;
 	for( i = p; i <= q; i++){
-		if(typ(i) == '('){
-			while(typ(i) != ')') i++;
-			continue;
-		}
-		if(ope_rank[typ(i)] <= nowmin){
+		if(ope_rank[typ(i)] >= nowmin){
 			nowmin = ope_rank[typ(i)];
 			nowp = i;
 		}
@@ -177,33 +177,48 @@ int eval(int p,int q){
 		global_success=false;
 	}
 	else if(p==q){
-		int num=0, len=strlen(tokens[q].str), i;
-		if(len>=3&&tokens[q].str[0]=='$'){
+		int num=0, len=strlen(tstr(q)), i;
+		if(len>=3&&tstr(q)[0]=='$'){
 			for( i=0;i<8;i++){
-				if(strcmp(regsl[i],tokens[q].str+1)==0){
+				if(strcmp(regsl[i],tstr(q)+1)==0){
+		
 					return reg_l(i);
 				}
 			}
 			for( i=0;i<8;i++){
-				if(strcmp(regsw[i],tokens[q].str+1)==0){
+				if(strcmp(regsw[i],tstr(q)+1)==0){
 					return reg_w(i);
 				}
 			}
 			for( i=0;i<8;i++){
-				if(strcmp(regsb[i],tokens[q].str+1)==0){
+				if(strcmp(regsb[i],tstr(q)+1)==0){
 					return reg_b(i);
 				}
 			}
-		}
-		if(len>1&&(tokens[q].str[1]=='x'||tokens[q].str[1]=='X')){
-			for( i=2;i<len;i++){
-				num=num*16+quan[(int)tokens[q].str[i]];
+			if(strcmp("eip",tstr(q)+1)==0){
+				return cpu.eip;
 			}
 		}
-		for( i=0;i<len;i++){
-			num=num*10+quan[(int)tokens[q].str[i]];
+		switch (typ(q))
+		{
+		case HEX: sscanf(tstr(q),"%x",&num);
+			break;
+		case DEC: sscanf(tstr(q),"%d",&num);
+			break;
+		default:
+			printf("bad expression\n");
+			global_success=false;
+			break;
 		}
-		// printf("hahah2  %d\n",num);
+		// if(len>1&&(tstr(q)[1]=='x'||tstr(q)[1]=='X')){
+		// 	for( i=2;i<len;i++){
+		// 		num=num*16+quan[(int)tstr(q)[i]];
+		// 	}
+		// }
+		// for( i=0;i<len;i++){
+		// 	num=num*10+quan[(int)tstr(q)[i]];
+		// }
+		printf("hahah2  %d\n",num);
 		return num;
 	}
 	else if(check_parentheses(p,q) == true){
@@ -212,13 +227,12 @@ int eval(int p,int q){
 	else {
 		int op,val1,val2;
 		op=getdominant(p,q);
-		if(typ(op)==NEG)return -1*eval(p+1,q);
+		val2=eval(op+1,q);
+		if(typ(op)==NEG)return -1*val2;
 		if(typ(op)==DEREF){
-			val1 = eval(p+1,q);
-			return swaddr_read(val1,4);
+			return swaddr_read(val2,4);
 		}
 		val1=eval(p,op-1);
-		val2=eval(op+1,q);
 		switch(typ(op)){
 			case '+':return val1+val2;
 			case '-':return val1-val2;
