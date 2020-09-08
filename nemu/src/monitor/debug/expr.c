@@ -222,7 +222,7 @@ int eval(int p,int q){
 		// for( i=0;i<len;i++){
 		// 	num=num*10+quan[(int)tstr(q)[i]];
 		// }
-		printf("hahah2  %d\n",num);
+		// printf("hahah2  %d\n",num);
 		return num;
 	}
 	else if(check_parentheses(p,q) == true){
@@ -269,7 +269,7 @@ uint32_t expr(char *e, bool *success) {
 	}
 	int ans=eval(1,nr_token);
 	if(global_success){
-		printf("The ans of expr is %d\n",ans);
+		printf("The ans of expr is %x\n",ans);
 	}
 	else {
 		*success = false;
