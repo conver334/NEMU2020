@@ -48,7 +48,7 @@ static struct rule {
 	{"\\*",MU},
 	{"-",MI},
 	{"/",EXCE},
-	{"\\b\\$[a-zA-Z]+",REG}
+	{"^\\$[a-zA-Z]+",REG}
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
