@@ -114,7 +114,7 @@ static bool make_token(char *e) {
 				 * of tokens, some extra actions should be performed.
 				 * NOTYPE = 256, EQ=259,NUM=257, ALP=258,LK='(',RK=')',MU='*',MI='-',AD='+',EXCE='/'
 				 */
-
+				printf("qwq %d\n",rules[i].token_type);
 				switch(rules[i].token_type) {
 					case NOTYPE:break;
 					case EQ:break;
