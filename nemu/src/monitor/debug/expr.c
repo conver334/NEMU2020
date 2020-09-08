@@ -122,8 +122,9 @@ static bool make_token(char *e) {
 							  if(substr_len<=32){
 								  strncpy(tokens[nr_token].str,substr_start,substr_len);  
 								  tokens[nr_token].str[substr_len]='\0';
+								  printf("%d   %s\n",nr_token,tstr(nr_token));
 							  }
-							  printf("%d   %s\n",nr_token,tstr(nr_token));
+							  
 				}
 				break;
 			}
