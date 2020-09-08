@@ -6,7 +6,10 @@
 static WP wp_pool[NR_WP];
 static WP *head, *free_;
 WP* new_wp(){
-	if(free_ == NULL)assert(0);
+	if(free_ == NULL){
+		printf("no enough space for new watchpoint\n");
+		assert(0);
+	}
 	WP* fir_free = free_;
 	free_ = free_->next;
 	fir_free->next = head;
@@ -14,8 +17,26 @@ WP* new_wp(){
 	return fir_free;
 }
 void free_wp(WP *wp){
-	wp->next=free_;
-	free_=wp;
+	bool flag=false;
+	if(head==wp){
+		head=head->next;
+		flag=true;
+	}
+	else{
+		WP* i=head;
+		while(i->next != wp){
+			i = i->next;
+		}
+		i->next = wp->next;
+		flag=true;
+	}
+	if(flag){
+		wp->next = free_;
+		free_ = wp;
+	}
+	else{
+		printf("this watchpoint doesn't exit!\n");
+	}
 }
 void init_wp_pool() {
 	int i;
