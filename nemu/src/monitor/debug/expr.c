@@ -7,7 +7,7 @@
 #include <regex.h>
 #define typ(index) tokens[index].type
 enum {
-	NOTYPE = 256, EQ=259,NUM=257, ALP=258,LK='(',RK=')',MU='*',MI='-',AD='+',EXCE='/'
+	NOTYPE = 256, EQ=259,NUM=257, ALP=258,LK='(',RK=')',MU='*',MI='-',AD='+',EXCE='/',DEREF=270,NEG=271
 
 	/* TODO: Add more token types */
 
@@ -17,6 +17,7 @@ void init(){
 	ope_rank['*']=3,ope_rank['/']=3;
 	ope_rank['+']=2,ope_rank['-']=2;
 	ope_rank[257]=300,ope_rank[258]=300,ope_rank[256]=300;ope_rank[259]=300;
+	ope_rank[270]=150,ope_rank[271]=151;
 }
 static struct rule {
 	char *regex;
@@ -177,6 +178,8 @@ int eval(int p,int q){
 	else {
 		int op,val1,val2;
 		op=getdominant(p,q);
+		if(typ(op)==NEG)return -1*eval(p+1,q);
+		if(typ(op)==DEREF){}
 		val1=eval(p,op-1);
 		val2=eval(op+1,q);
 		switch(typ(op)){
@@ -195,6 +198,15 @@ uint32_t expr(char *e, bool *success) {
 		return 0;
 	}
 	init();
+	int i;
+	for(i = 0; i < nr_token; i++){
+		if(tokens[i].type == '*' && (i == 0 ||ope_rank[tokens[i - 1].type]<=5)){
+			tokens[i].type = DEREF;
+		}
+		else if(tokens[i].type == '-' && (i == 0 ||ope_rank[tokens[i - 1].type]<=5)){
+			tokens[i].type = NEG;
+		}
+	}
 	int ans=eval(1,nr_token);
 	if(global_success){
 		printf("The ans of expr is %d\n",ans);
