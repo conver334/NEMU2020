@@ -88,11 +88,11 @@ static int cmd_w(char *args) {
 	WP* newwp = new_wp();
 	bool exp_success=true;
 	if(newwp!=NULL){
-		newwp->posi = args;
-		printf("haha %s\n",newwp->posi);
+		strcpy(newwp->posi , args);
+		// printf("haha %s\n",newwp->posi);
 		newwp->value = expr(args,&exp_success);
 		newwp->NO = ++total_watch;
-		printf("Hardware watchpoint%d : %s",total_watch,args);
+		printf("Hardware watchpoint %d : %s",total_watch,args);
 	}
 	return 0;
 }
