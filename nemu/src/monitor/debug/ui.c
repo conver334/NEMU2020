@@ -60,7 +60,11 @@ static int cmd_info(char *args) {
 }
 static int cmd_p(char *args) {
 	bool exp_success;
-	expr(args,&exp_success);
+	uint32_t ans=expr(args,&exp_success);
+	if(exp_success){
+		printf("The ans of expr is %d\n",ans);
+	}
+	else printf("invalid expression\n");
 	return 0;
 }
 static int cmd_x(char *args) {
