@@ -8,7 +8,7 @@
 #define typ(index) tokens[index].type
 #define tstr(index) tokens[index].str
 enum {	
-	NOTYPE = 256, REG=258,DEC=257,HEX=256,
+	NOTYPE = 256, REG=257,DEC=258,HEX=259,
 	LK='(',RK=')',
 	DEREF=260,NEG=261,NOT='!',
 	MU='*',EXCE='/',MI='-',AD='+',
@@ -114,7 +114,7 @@ static bool make_token(char *e) {
 				 * of tokens, some extra actions should be performed.
 				 * NOTYPE = 256, EQ=259,NUM=257, ALP=258,LK='(',RK=')',MU='*',MI='-',AD='+',EXCE='/'
 				 */
-				printf("qwq %d\n",rules[i].token_type);
+				// printf("qwq %d\n",rules[i].token_type);
 				switch(rules[i].token_type) {
 					case NOTYPE:break;
 					case EQ:break;
@@ -122,9 +122,8 @@ static bool make_token(char *e) {
 							  if(substr_len<=32){
 								  strncpy(tokens[nr_token].str,substr_start,substr_len);  
 								  tokens[nr_token].str[substr_len]='\0';
-								  printf("%d   %s\n",nr_token,tstr(nr_token));
-							  }
-							  
+								//   printf("%d   %s\n",nr_token,tstr(nr_token));
+							  }					  
 				}
 				break;
 			}
