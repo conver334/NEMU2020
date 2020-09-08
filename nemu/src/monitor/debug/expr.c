@@ -260,17 +260,17 @@ uint32_t expr(char *e, bool *success) {
 	init();
 	int i;
 	for(i = 0; i < nr_token; i++){
-		if(tokens[i].type == '*' && (i == 0 ||ope_rank[tokens[i - 1].type]<=5)){
+		if(tokens[i].type == '*' && (i == 0 ||ope_rank[tokens[i - 1].type]>0)){
 			tokens[i].type = DEREF;
 		}
-		else if(tokens[i].type == '-' && (i == 0 ||ope_rank[tokens[i - 1].type]<=5)){
+		else if(tokens[i].type == '-' && (i == 0 ||ope_rank[tokens[i - 1].type]>0)){
 			tokens[i].type = NEG;
 		}
 	}
 	int ans=eval(1,nr_token);
 	if(global_success){
 		return ans;
-	//	printf("The ans of expr is %d\n",);
+		//printf("The ans of expr is %d\n",);
 	}
 	else {
 		*success = false;
