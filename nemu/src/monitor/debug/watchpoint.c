@@ -5,7 +5,16 @@
 
 static WP wp_pool[NR_WP];
 static WP *head, *free_;
-
+WP* new_wp(){
+	if(free_ == NULL)assert(0);
+	WP* fir_free = free_;
+	free_ = free_->next;
+	return fir_free;
+}
+void free_wp(WP *wp){
+	wp->next=free_;
+	free_=wp;
+}
 void init_wp_pool() {
 	int i;
 	for(i = 0; i < NR_WP; i ++) {

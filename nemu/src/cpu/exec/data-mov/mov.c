@@ -1,5 +1,5 @@
 #include "cpu/exec/helper.h"
-
+//data_byte  1 b  2 w 4    3 functions
 #define DATA_BYTE 1
 #include "mov-template.h"
 #undef DATA_BYTE

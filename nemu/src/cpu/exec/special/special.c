@@ -35,6 +35,7 @@ make_helper(nemu_trap) {
 			printf("\33[1;31mnemu: HIT %s TRAP\33[0m at eip = 0x%08x\n\n",
 					(cpu.eax == 0 ? "GOOD" : "BAD"), cpu.eip);
 			nemu_state = END;
+			// \33 front color backgroud color!
 	}
 
 	return 1;

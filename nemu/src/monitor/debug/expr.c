@@ -7,17 +7,28 @@
 #include <regex.h>
 #define typ(index) tokens[index].type
 enum {
-	NOTYPE = 256, EQ=259,NUM=257, ALP=258,LK='(',RK=')',MU='*',MI='-',AD='+',EXCE='/',DEREF=270,NEG=271
+	NOTYPE = 256, EQ=259,NUM=257,REG=258,LK='(',RK=')',MU='*',MI='-',AD='+',EXCE='/',DEREF=270,NEG=271
 
 	/* TODO: Add more token types */
 
 };
 int ope_rank[300];
+int quan[300];
 void init(){
 	ope_rank['*']=3,ope_rank['/']=3;
 	ope_rank['+']=2,ope_rank['-']=2;
 	ope_rank[257]=300,ope_rank[258]=300,ope_rank[256]=300;ope_rank[259]=300;
 	ope_rank[270]=150,ope_rank[271]=151;
+	int i='0';
+	for(; i < 58; i++){
+		quan[i]=i-48;
+	}
+	for( i = 'a'; i <= 'z'; i++){
+		quan[i]=i - 'a' + 10;
+	}
+	for( i = 'A'; i <= 'Z'; i++){
+		quan[i]=i - 'A' + 10;
+	}
 }
 static struct rule {
 	char *regex;
@@ -31,13 +42,13 @@ static struct rule {
 	{" +",	NOTYPE},				// spaces
 	{"\\+", AD},					// plus
 	{"==", EQ},						// equal
-	{"[0-9]+",NUM},
+	{"\\w",NUM},
 	{"\\(",LK},
 	{"\\)",RK},
 	{"\\*",MU},
 	{"-",MI},
-	{"[A-Za-z]",ALP},
-	{"/",EXCE}
+	{"/",EXCE},
+	{"\\b\\$[a-zA-Z]+",REG}
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
@@ -99,12 +110,6 @@ static bool make_token(char *e) {
 								  tokens[nr_token].str[substr_len]='\0';
 							  }
 							  break;
-					case ALP: tokens[++nr_token].type=rules[i].token_type;
-							if(substr_len<=32){
-								  strncpy(tokens[nr_token].str,substr_start,substr_len);	
-								  tokens[nr_token].str[substr_len]='\0';		  
-							}	
-							break;
 					case NOTYPE:break;
 					case EQ:break;
 					default: tokens[++nr_token].type=rules[i].token_type;
@@ -160,14 +165,39 @@ bool check_parentheses(int p, int q){
 	}
 	return 0;
 }
+// const char *regsl[] = {"eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi"};
+// const char *regsw[] = {"ax", "cx", "dx", "bx", "sp", "bp", "si", "di"};
+// const char *regsb[] = {"al", "cl", "dl", "bl", "ah", "ch", "dh", "bh"};
+// #define reg_l(index) (cpu.gpr[check_reg_index(index)]._32)  
+// #define reg_w(index) (cpu.gpr[check_reg_index(index)]._16)
+// #define reg_b(index) (cpu.gpr[check_reg_index(index) & 0x3]._8[index >> 2])
+
 int eval(int p,int q){
 	if(p>q){
 		global_success=false;
 	}
 	else if(p==q){
-		int num=0, len=strlen(tokens[q].str), i;
+		int num=0, len=strlen(tokens[q].str), i, wei = 10;
+		if(len>=3&&tokens[q].str[0]=='$'){
+			for( i=0;i<8;i++){
+				if(strcmp(regsl[i],tokens[q].str+1)==0){
+					return reg_l(i);
+				}
+			}
+			for( i=0;i<8;i++){
+				if(strcmp(regsw[i],tokens[q].str+1)==0){
+					return reg_w(i);
+				}
+			}
+			for( i=0;i<8;i++){
+				if(strcmp(regsb[i],tokens[q].str+1)==0){
+					return reg_b(i);
+				}
+			}
+		}
+		if(len>1&&(tokens[q].str[1]=='x'||tokens[q].str[1]=='X'))wei = 16;
 		for( i=0;i<len;i++){
-			num=num*10+tokens[q].str[i]-'0';
+			num=num*wei+quan[(int)tokens[q].str[i]];
 		}
 		// printf("hahah2  %d\n",num);
 		return num;
@@ -179,7 +209,10 @@ int eval(int p,int q){
 		int op,val1,val2;
 		op=getdominant(p,q);
 		if(typ(op)==NEG)return -1*eval(p+1,q);
-		if(typ(op)==DEREF){}
+		if(typ(op)==DEREF){
+			val1 = eval(p+1,q);
+			// return 
+		}
 		val1=eval(p,op-1);
 		val2=eval(op+1,q);
 		switch(typ(op)){
