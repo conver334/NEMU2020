@@ -49,14 +49,18 @@ static struct rule {
 	{" +",	NOTYPE},				// spaces
 	{"\\+", AD},					// plus
 	{"==", EQ},						// equal
-	{"[0-9A-Za-z]+",HEX},
+	{"!=",NEQ},			
+	{"0[Xx][0-9A-Fa-f]+",HEX},
 	{"[0-9]+",DEC},
 	{"\\(",LK},
 	{"\\)",RK},
 	{"\\*",MU},
 	{"-",MI},
 	{"/",EXCE},
-	{"^\\$[a-zA-Z]+",REG}
+	{"\\$[a-zA-Z]+",REG},
+	{"\\!", NOT},
+	{"&&", AND},
+	{"\\|\\|", OR}
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
