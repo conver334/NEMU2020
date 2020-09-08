@@ -123,11 +123,11 @@ static bool make_token(char *e) {
 								  strncpy(tokens[nr_token].str,substr_start,substr_len);  
 								  tokens[nr_token].str[substr_len]='\0';
 							  }
+							  printf("%d   %s\n",nr_token,tstr(nr_token));
 				}
 				break;
 			}
 		}
-
 		if(i == NR_REGEX) {
 			printf("no match at position %d\n%s\n%*.s^\n", position, e, position, "");
 			return false;
@@ -236,12 +236,17 @@ int eval(int p,int q){
 		if(typ(op)==DEREF){
 			return swaddr_read(val2,4);
 		}
+		if(typ(op)==NOT)return (!val2);
 		val1=eval(p,op-1);
 		switch(typ(op)){
 			case '+':return val1+val2;
 			case '-':return val1-val2;
 			case '*':return val1*val2;
 			case '/':return (val1/val2);
+			case AND:return (val1&&val2);
+			case OR:return (val1||val2);
+			case EQ:return (val1==val2);
+			case NEQ:return (val1!=val2);
 			default:global_success=false; // dont know assert
 		}
 	}
