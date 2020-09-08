@@ -177,7 +177,7 @@ int eval(int p,int q){
 		global_success=false;
 	}
 	else if(p==q){
-		int num=0, len=strlen(tokens[q].str), i, wei = 10;
+		int num=0, len=strlen(tokens[q].str), i;
 		if(len>=3&&tokens[q].str[0]=='$'){
 			for( i=0;i<8;i++){
 				if(strcmp(regsl[i],tokens[q].str+1)==0){
@@ -195,9 +195,13 @@ int eval(int p,int q){
 				}
 			}
 		}
-		if(len>1&&(tokens[q].str[1]=='x'||tokens[q].str[1]=='X'))wei = 16;
+		if(len>1&&(tokens[q].str[1]=='x'||tokens[q].str[1]=='X')){
+			for( i=2;i<len;i++){
+				num=num*16+quan[(int)tokens[q].str[i]];
+			}
+		}
 		for( i=0;i<len;i++){
-			num=num*wei+quan[(int)tokens[q].str[i]];
+			num=num*10+quan[(int)tokens[q].str[i]];
 		}
 		// printf("hahah2  %d\n",num);
 		return num;
