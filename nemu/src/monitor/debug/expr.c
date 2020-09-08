@@ -211,7 +211,7 @@ int eval(int p,int q){
 		if(typ(op)==NEG)return -1*eval(p+1,q);
 		if(typ(op)==DEREF){
 			val1 = eval(p+1,q);
-			// return 
+			return swaddr_read(val1,4);
 		}
 		val1=eval(p,op-1);
 		val2=eval(op+1,q);
