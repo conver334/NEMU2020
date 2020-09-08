@@ -89,6 +89,7 @@ static int cmd_w(char *args) {
 	bool exp_success=true;
 	if(newwp!=NULL){
 		newwp->posi = args;
+		printf("haha %s\n",newwp->posi);
 		newwp->value = expr(args,&exp_success);
 		newwp->NO = ++total_watch;
 		printf("Hardware watchpoint%d : %s",total_watch,args);
