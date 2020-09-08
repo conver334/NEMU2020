@@ -269,7 +269,8 @@ uint32_t expr(char *e, bool *success) {
 	}
 	int ans=eval(1,nr_token);
 	if(global_success){
-		printf("The ans of expr is %d\n",ans);
+		return ans;
+	//	printf("The ans of expr is %d\n",);
 	}
 	else {
 		*success = false;

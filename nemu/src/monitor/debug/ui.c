@@ -59,12 +59,12 @@ static int cmd_info(char *args) {
 	return 0;
 }
 static int cmd_p(char *args) {
-	bool exp_success;
+	bool exp_success=true;
 	uint32_t ans=expr(args,&exp_success);
-	if(exp_success){
+	if(exp_success==true){
 		printf("The ans of expr is %d\n",ans);
 	}
-	else printf("invalid expression\n");
+	else {printf("invalid expression\n");}
 	return 0;
 }
 static int cmd_x(char *args) {
