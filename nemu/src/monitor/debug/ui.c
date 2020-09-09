@@ -89,7 +89,6 @@ static int cmd_w(char *args) {
 	bool exp_success = true;
 	if(newwp!=NULL){
 		strcpy(newwp->posi , args);
-		// printf("hahah2\n");
 		// printf("haha %s\n",newwp->posi);
 		newwp->value = expr(args,&exp_success);	
 		printf("Hardware watchpoint %d : %s",newwp->NO ,newwp->posi);
