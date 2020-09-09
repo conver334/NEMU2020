@@ -10,6 +10,8 @@ WP* new_wp(){
 		printf("no enough space for new watchpoint\n");
 		assert(0);
 	}
+	printf("hahha");
+	Log("hahah\n");
 	WP* fir_free = free_;
 	free_ = free_->next;
 	fir_free->next = head;
