@@ -59,7 +59,7 @@ bool run_wp(){
 		value_now = expr(i->posi,&exp_success) ;
 		if(value_now != i->value){
 			printf("Hardware watchpoint %d: %s\n",i->NO,i->posi);
-			printf("Old value = %d\nNew value = %d\n",i->value,value_now);
+			printf("Old value = %x\nNew value = %x\n",i->value,value_now);
 			i->value = value_now;
 			change = true;
 		}
@@ -84,7 +84,7 @@ bool point_delete(int rank){
 void point_print(){
 	WP* i = head;
 	for(; i != NULL; i = i->next){
-		printf("Hardware watchpoint %d: %s = %d\n",i->NO,i->posi,i->value);
+		printf("Hardware watchpoint %d: %s = %x\n",i->NO,i->posi,i->value);
 	}
 }
 /* TODO: Implement the functionality of watchpoint */
