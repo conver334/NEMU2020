@@ -66,14 +66,10 @@ bool run_wp(){
 }
 bool point_delete(int rank){
 	if(head == NULL)return 0;
-	if(head -> NO == rank){
-		head=head->next;return 1;
-	}
-	WP* fr= head; 
-	WP* i = head->next;
-	for(; i != NULL;fr = i, i = i->next){
+	WP* i = head;
+	for(; i != NULL; i = i->next){
 		if( i->NO == rank){
-			fr->next = i->next;
+			free_wp(i);
 			return 1;
 		}
 	}
