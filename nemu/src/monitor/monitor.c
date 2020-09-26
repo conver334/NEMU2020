@@ -73,7 +73,9 @@ static void load_entry() {
 	assert(ret == 1);
 	fclose(fp);
 }
-
+static void init_eflags(){
+	cpu.eflags=2;
+}
 void restart() {
 	/* Perform some initialization to restart a program */
 #ifdef USE_RAMDISK
@@ -83,10 +85,11 @@ void restart() {
 
 	/* Read the entry code into memory. */
 	load_entry();
-
+	
 	/* Set the initial instruction pointer. */
 	cpu.eip = ENTRY_START;
-
+	/* set eflags */
+	init_eflags();
 	/* Initialize DRAM. */
 	init_ddr3();
 }
