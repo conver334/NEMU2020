@@ -33,3 +33,4 @@
 #include "data-mov/push.h"
 #include "logic/test.h"
 #include "call-data/je.h"
+#include "arith/cmp.h"
