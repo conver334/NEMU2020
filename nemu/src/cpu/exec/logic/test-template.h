@@ -17,6 +17,7 @@ static void do_execute(){
         if(result&(1<<i))flag=flag^1;
     }
     cpu.PF=flag;
+    print_template1();
 }
 
 make_instr_helper(i2a)
