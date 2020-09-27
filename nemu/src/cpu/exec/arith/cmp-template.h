@@ -16,12 +16,11 @@ static void do_execute() {
 	op2=op_src->val>>len;
     cpu.OF=(op1 != op2 && op2 == cpu.SF) ;
     //zf == 1 opr1==opr2	
-	cpu.ZF=!result;
-	int i, flag=1;
-    for(i=0;i<8;i++){
-        if(result&(1<<i))flag=flag^1;
-    }
-    cpu.PF=flag;
+	result ^= result >>4;
+	result ^= result >>2;
+	result ^= result >>1;
+	cpu.PF=!(result & 1);
+    print_template2();
 }
 
 #if DATA_BYTE == 2 || DATA_BYTE == 4
