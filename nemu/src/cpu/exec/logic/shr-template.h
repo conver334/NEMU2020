@@ -11,7 +11,7 @@ static void do_execute () {
 	OPERAND_W(op_dest, dest);
 
 	/* TODO: Update EFLAGS. */
-	panic("please implement me");
+	panic("shr is not defined");
 
 	print_asm_template2();
 }
