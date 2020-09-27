@@ -34,5 +34,10 @@ extern char assembly[];
 
 #define print_template1()\
 	print_asm(str(instr)" %s",op_src->str)
+#define print_template2() \
+	print_asm(str(instr)" %s,%s", op_src->str, op_dest->str)
+
+#define print_template3() \
+	print_asm(str(instr) " %s,%s,%s", op_src->str, op_src2->str, op_dest->str)
 	
 #endif

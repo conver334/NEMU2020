@@ -74,7 +74,7 @@ static void load_entry() {
 	fclose(fp);
 }
 static void init_eflags(){
-	cpu.eflags=2;
+	cpu.eflags= 2;
 }
 void restart() {
 	/* Perform some initialization to restart a program */
