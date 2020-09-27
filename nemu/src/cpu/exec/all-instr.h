@@ -33,7 +33,7 @@
 #include "data-mov/push.h"
 #include "logic/test.h"
 #include "call-data/je.h"
-
+#include "data-mov/pop.h"
 #include "arith/cmp.h"
 #include "arith/add.h"
 #include "arith/sub.h"
