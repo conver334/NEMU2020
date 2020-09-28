@@ -17,7 +17,7 @@ static void do_execute () {
 	}
 
 	OPERAND_W(op_src2, out);
-	panic("shrd is not defined");
+
 	print_asm("shrd" str(SUFFIX) " %s,%s,%s", op_src->str, op_dest->str, op_src2->str);
 }
 
@@ -28,6 +28,5 @@ make_helper(concat(shrdi_, SUFFIX)) {
 	return len + 1;
 }
 #endif
-
 
 #include "cpu/exec/template-end.h"

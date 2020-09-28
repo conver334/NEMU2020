@@ -29,11 +29,11 @@
 
 #include "special/special.h"
 
-#include "call-data/ret.h"
-#include "call-data/call.h"
+#include "control-tran/ret.h"
+#include "control-tran/call.h"
 #include "data-mov/push.h"
 #include "logic/test.h"
-#include "call-data/je.h"
+#include "control-tran/je.h"
 #include "data-mov/pop.h"
 #include "arith/cmp.h"
 #include "arith/add.h"
