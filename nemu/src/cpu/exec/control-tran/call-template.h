@@ -11,6 +11,7 @@ make_helper (concat(call_i_, SUFFIX))
 	reg_l (R_ESP) -= DATA_BYTE;
 	//push the return address onto the stack [1.the stack needle moves down,then write ].
 	swaddr_write (reg_l (R_ESP) , 4 , cpu.eip + len);
+	printf("%x\n",cpu.eip + len);
 	//after decode
 	//op_src immediate information in the instruction
 	//op_dest register information
