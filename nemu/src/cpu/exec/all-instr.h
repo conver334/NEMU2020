@@ -40,3 +40,10 @@
 #include "arith/sub.h"
 #include "arith/sbb.h"
 #include "arith/adc.h"
+
+#include "logic/setb.h"
+#include "logic/sete.h"
+#include "logic/setne.h"
+#include "logic/seto.h"
+#include "logic/setp.h"
+#include "logic/sets.h"
