@@ -5,8 +5,8 @@
 static void do_execute () {
 	if (DATA_BYTE == 1)
 	{
-		swaddr_write (op_src->addr, 4 ,MEM_R(reg_l (R_SP)));
-		reg_l (R_SP) += 2;
+		swaddr_write (op_src->addr, 4 ,MEM_R(reg_l (R_ESP)));
+		reg_l (R_ESP) += 4;
 	}
 	else
 	{
