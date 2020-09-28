@@ -14,6 +14,9 @@ make_helper(concat(ret_i_, SUFFIX)) {
 	cpu.eip = MEM_R (REG (R_ESP));
 	if (DATA_BYTE == 2)cpu.eip &= 0xffff;
 	reg_l(R_ESP) += DATA_BYTE;
+	int i;
+	for (i = 0;i < num; i+=DATA_BYTE)
+	MEM_W (REG (R_ESP) + i,0);
 	reg_l(R_ESP) += num;
 	print_asm("ret 0x%x", num);
 	return 1;
