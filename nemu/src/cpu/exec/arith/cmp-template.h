@@ -15,6 +15,7 @@ static void do_execute() {
 	op1=op_dest->val>>len;
 	op2=op_src->val>>len;
     cpu.OF=(op1 != op2 && op2 == cpu.SF) ;
+	cpu.ZF=!result;
     //zf == 1 opr1==opr2	
 	result ^= result >>4;
 	result ^= result >>2;

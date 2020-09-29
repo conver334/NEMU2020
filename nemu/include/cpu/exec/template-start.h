@@ -3,9 +3,10 @@
 #if DATA_BYTE == 1
 
 #define SUFFIX b
+//usigned immediate
 #define DATA_TYPE uint8_t
 #define DATA_TYPE_S int8_t
-
+//signed immediate
 #elif DATA_BYTE == 2
 
 #define SUFFIX w
