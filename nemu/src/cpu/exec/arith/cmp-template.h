@@ -17,10 +17,11 @@ static void do_execute() {
     cpu.OF=(op1 != op2 && op2 == cpu.SF) ;
 	cpu.ZF=!result;
     //zf == 1 opr1==opr2	
-	result ^= result >>4;
-	result ^= result >>2;
-	result ^= result >>1;
-	cpu.PF=!(result & 1);
+	int i, flag=1;
+    for(i=0;i<8;i++){
+        if(result&(1<<i))flag=flag^1;
+    }
+    cpu.PF=flag;
     print_template2();
 }
 
