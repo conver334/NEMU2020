@@ -4,19 +4,24 @@
 
 static void do_execute() {
 	DATA_TYPE result = op_dest->val + op_src->val;
+	OPERAND_W(op_dest, result);
 	int len = (DATA_BYTE << 3) - 1;
-	int s1,s2;
 	cpu.CF=(result < op_dest->val);
 	cpu.SF=result >> len;
-	s1=op_dest->val>>len;
-	s2=op_src->val>>len;
-    	cpu.OF=(s1 == s2 && s1 != cpu.SF) ;
+
+    int op1,op2;
+	op1=op_dest->val>>len;
+	op2=op_src->val>>len;
+    cpu.OF=(op1 == op2 && op1 != cpu.SF) ;
+
 	cpu.ZF=!result;
-	OPERAND_W(op_dest, result);
-	result ^= result >>4;
-	result ^= result >>2;
-	result ^= result >>1;
-	cpu.PF=!(result & 1);
+	
+    int i, flag=1;
+    for(i=0;i<8;i++){
+        if(result&(1<<i))flag=flag^1;
+    }
+    cpu.PF=flag;
+	
 	print_template2();
 }
 #if DATA_BYTE == 2 || DATA_BYTE == 4
