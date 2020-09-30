@@ -36,6 +36,8 @@
 #include "string/cld.h"
 #include "string/cmps.h"
 #include "string/stos.h"
+#include "string/lods.h"
+#include "string/scas.h"
 #include "logic/test.h"
 #include "control-tran/jcc.h"
 #include "control-tran/jmp.h"
