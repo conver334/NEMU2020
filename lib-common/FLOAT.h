@@ -4,25 +4,30 @@
 #include "trap.h"
 
 typedef int FLOAT;
+#define ll long long 
+#define getflag(x) (res>>31)&1
+#define getsign(x) (x?-1:1)
+#define l16 (1<<16)
 
 static inline int F2int(FLOAT a) {
-	nemu_assert(0);
-	return 0;
+	int flag=getflag(a);
+	int tmp=a*getsign(flag);
+	return (tmp>>16)*getsign(flag);
 }
 
 static inline FLOAT int2F(int a) {
-	nemu_assert(0);
-	return 0;
+	int flag=getflag(a);
+	int tmp=a*getsign(flag);
+
+	return (tmp<<16)*getsign(flag);
 }
 
 static inline FLOAT F_mul_int(FLOAT a, int b) {
-	nemu_assert(0);
-	return 0;
+	return (a*b);
 }
 
 static inline FLOAT F_div_int(FLOAT a, int b) {
-	nemu_assert(0);
-	return 0;
+	return (a/b);
 }
 
 FLOAT f2F(float);
