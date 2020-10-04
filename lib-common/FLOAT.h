@@ -5,7 +5,7 @@
 
 typedef int FLOAT;
 #define ll long long 
-#define getflag(x) (res>>31)&1
+#define getflag(x) (x>>31)&1
 #define getsign(x) (x?-1:1)
 #define l16 (1<<16)
 

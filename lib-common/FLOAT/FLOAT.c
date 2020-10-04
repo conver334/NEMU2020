@@ -24,7 +24,7 @@ FLOAT F_div_F(FLOAT a, FLOAT b) {
 	 */
 
 	int flag1=getflag(a),flag2=getflag(b),flag3;
-	flag3 = getsign(falg1)*getsign(flag2);
+	flag3 = getsign(flag1)*getsign(flag2);
 	int tmp1=a*getsign(flag1),tmp2=b*getsign(flag2);
 	int ans=tmp1/tmp2,mod=tmp1%tmp2;
 	int i;
@@ -69,7 +69,7 @@ FLOAT f2F(float a) {
 	else res|=(1<<23);
 	if(e>7)res<<=e-7;
 	else res>>=-e+7;
-	return (res*(getsign(flag));
+	return (res*getsign(flag));
 }
 
 FLOAT Fabs(FLOAT a) {
