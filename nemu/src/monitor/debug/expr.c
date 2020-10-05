@@ -11,7 +11,17 @@ enum {
 	NOTYPE = 256, EQ
 
 	/* TODO: Add more token types */
-        , NUM, NEQ, OR, AND, REG, REF, NEG
+    NUMBER,         // number
+    HEXADECIMAL,    // hex
+    REG,            // register
+    NEQ,            // !=
+    LAND,           // &&
+    LOR,            // ||
+    LNOT,           // !
+    DEREF,          // *addr
+    NEG,            // neg - negative is fu hao
+    VAR,
+	/* TODO: Add more token types */
 };
 
 static struct rule {
@@ -26,19 +36,19 @@ static struct rule {
 	{" +",	NOTYPE},				// spaces
 	{"\\+", '+'},					// plus
 	{"==", EQ},						// equal
-	{"0x[0-9a-fA-F]{1,8}", NUM},			// hex
-	{"[0-9]{1,10}", NUM},					// dec
-	{"\\$[a-z]{1,31}", REG},				// register names 
-	{"-", '-'},
-	{"\\*", '*'},
-	{"/", '/'},
-	{"%", '%'},
-	{"!=", NEQ},
-	{"&&", AND},
-	{"\\|\\|", OR},
-	{"!", '!'},
-	{"\\(", '('},
-	{"\\)", ')'} 
+	 {"-", '-'},                                                                 // minus-
+    {"\\*", '*'},                                                               // multi*
+    {"/", '/'},                                                                 // div/
+    {"\\(", '('},                                                                 // (
+    {"\\)", ')'},                                                                 //)
+    {"&&", LAND},                                                               // &&
+    {"\\|\\|", LOR},                                                            // ||
+    {"!=", NEQ},                                                                // !=
+    {"!", LNOT},                                                                // !
+    {"\\$([eE]?(ax|cx|dx|bx|sp|bp|si|di))|\\$([a-d][hl])|\\$([cpazso]f)|\\$eip", REG},                   // reg
+    {"0[xX][a-fA-F0-9]{1,8}", HEXADECIMAL},                                            // hex
+    {"([1-9][0-9]{1,31})|[0-9]", NUMBER},                                       // number
+    {"\\w+", VAR}, 
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
@@ -69,6 +79,9 @@ typedef struct token {
 
 Token tokens[32];
 int nr_token;
+bool kuohao(int i){
+    return (tokens[i].type == '(' || tokens[i].type == ')');
+}
 
 static bool make_token(char *e) {
 	int position = 0;
@@ -84,21 +97,39 @@ static bool make_token(char *e) {
 				char *substr_start = e + position;
 				int substr_len = pmatch.rm_eo;
 
-				Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s", i, rules[i].regex, position, substr_len, substr_len, substr_start);
+				// Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s", i, rules[i].regex, position, substr_len, substr_len, substr_start);
 				position += substr_len;
 
 				/* TODO: Now a new token is recognized with rules[i]. Add codes
 				 * to record the token in the array `tokens'. For certain types
 				 * of tokens, some extra actions should be performed.
 				 */
-
+                
+                if (substr_len > 32){
+                    return false;
+                }
+                
 				switch(rules[i].token_type) {
-                                        case NOTYPE: break;
-                                        case NUM:
-					//default: panic("please implement me");
-                                        case REG: sprintf(tokens[nr_token].str, "%.*s", substr_len, substr_start);
-					default: tokens[nr_token].type = rules[i].token_type;
-							 nr_token ++;
+                    case '+':
+                    case '-':
+                    case '*':
+                    case '/':
+                    case '(':
+                    case ')':
+                    case EQ:
+                    case NEQ:
+                    case LNOT:
+                    case LAND:
+                    case LOR:
+                    case HEXADECIMAL:
+                    case REG:
+                    case VAR:
+                    case NUMBER: {
+                        tokens[nr_token].type = rules[i].token_type;
+                        strncpy(tokens[nr_token].str, substr_start, substr_len);
+                        tokens[nr_token++].str[substr_len] = '\0';
+                        break;
+                    }
 				}
 
 				break;
@@ -110,7 +141,18 @@ static bool make_token(char *e) {
 			return false;
 		}
 	}
-
+    // find *addr
+    for(i = 0; i < nr_token; i++){
+        if((tokens[i].type == '*' || tokens[i].type == '-')&& (i == 0 || (tokens[i - 1].type != NUMBER && tokens[i - 1].type != REG && tokens[i - 1].type != HEXADECIMAL && !kuohao(i - 1)))){
+            // printf("deref:%d\n", i);
+            if (tokens[i].type == '*'){
+                tokens[i].type = DEREF;
+            } else if(tokens[i].type == '-'){
+                // printf("neg pos%d\n", i);
+                tokens[i].type = NEG;
+            }
+        }
+    }
 	return true; 
 }
 
