@@ -7,6 +7,7 @@ CPU_state cpu;
 const char *regsl[] = {"eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi"};
 const char *regsw[] = {"ax", "cx", "dx", "bx", "sp", "bp", "si", "di"};
 const char *regsb[] = {"al", "cl", "dl", "bl", "ah", "ch", "dh", "bh"};
+const char *regef[] = {"cf", "pos1", "pf", "pos3", "af", "pos5", "zf", "sf", "tf", "if", "df", "of", "ol", "ip", "nt", "pos15", "rf", "vm"};
 
 void reg_test() {
 	srand(time(0));
@@ -80,5 +81,48 @@ uint32_t get_reg_val(const char *s, bool *success) {
 
 	*success = false;
 	return 0;
+}
+uint32_t get_reg_by_str(bool *success, char *e){
+    int i;
+    if (strlen(e) == 3){
+        for (i = R_EAX; i <= R_EDI; i++){
+            if (strcmp(e, regsl[i]) == 0){
+                return reg_l(i);
+            }
+        }
+		if (strcmp(e, "eip") == 0){
+			return cpu.eip;
+		}
+		*success = false;
+        return 0;
+    } else if(strlen(e) == 2){
+        for(i = R_AX; i <= R_DI; i++){
+            if(strcmp(e, regsw[i]) == 0){
+                return reg_w(i);
+            }
+        }
+        for(i = R_AL; i <= R_BH; i++){
+            if(strcmp(e, regsb[i]) == 0){
+                return reg_b(i);
+            }
+        }
+		if(strcmp(e, "cf") == 0){
+			return cpu.CF;
+		} else if(strcmp(e, "pf") == 0){
+			return cpu.PF;
+		} else if(strcmp(e, "af") == 0){
+			return  cpu.AF;
+		} else if(strcmp(e, "zf") == 0){
+			return cpu.ZF;
+		} else if(strcmp(e, "sf") == 0){
+			return cpu.SF;
+		}
+		*success = false;
+        return 0;
+    } else{
+        *success = false;
+        return 0;
+    }
+    return 0;
 }
 

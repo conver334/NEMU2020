@@ -80,4 +80,36 @@ void load_elf_tables(int argc, char *argv[]) {
 
 	fclose(fp);
 }
-
+int find_variable(char *e, bool *success){
+	int i, offSet;
+	for(i = 0; i < nr_symtab_entry; i++){
+		if((symtab[i].st_info & 0xf) == STT_OBJECT){
+			offSet = symtab[i].st_name;
+			if(strncmp(e, strtab + offSet, strlen(e)) == 0){
+				return symtab[i].st_value;
+			}
+		}
+	}
+	*success = 0;
+	return 0;
+}
+int find_func(int eip, char *name){
+	int i, baseAddr, size, offSet;
+	for(i = 0; i < nr_symtab_entry; i++){
+		if((symtab[i].st_info & 0xf) == STT_FUNC){
+			baseAddr = symtab[i].st_value;
+			size = symtab[i].st_size;
+			offSet = symtab[i].st_name;
+			if(eip >= baseAddr && eip <= baseAddr + size){
+				int j;
+				for(j = 0; strtab[offSet + j]; j++){
+					name[j] = strtab[offSet + j];
+				}
+				name[j] = '\0';
+				// strncpy(name, strtab + offSet, len);
+				return 0;
+			}
+		}
+	}
+	return -1;
+}
