@@ -6,9 +6,10 @@
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-
+#include <elf.h>
 void cpu_exec(uint32_t);
 void display_reg();
+int find_func(int eip, char *name);
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 char* rl_gets() {
@@ -128,7 +129,27 @@ static int cmd_c(char *args) {
 static int cmd_q(char *args) {
 	return -1;
 }
-
+static int cmd_bt(char *args){
+    char name[255];
+    int thisesp = cpu.esp, thisebp = cpu.ebp, thiseip = cpu.eip;
+    while(thisebp){
+        int res = find_func(thiseip, name);
+        if(res){
+            return 0;
+        }
+        printf("-----------------------\n");
+        printf("in function [%s]\n", name);
+        int addr = thisebp + 8, i;
+        for(i = 0; i < 4; i++){
+            printf("arg%d: addr:0x%x, val:0x%x\n", i + 1, addr + i * 4,swr4(addr + i * 4));
+        }
+        printf("------------------------\n");
+        thisesp = thisebp - 8;
+        thiseip = swr4(thisebp + 4);
+        thisebp = swr4(thisebp);
+    }
+    return 0;
+}
 static int cmd_help(char *args);
 
 static struct {
@@ -146,7 +167,8 @@ static struct {
 	{ "x", "Examine memory", cmd_x },
         { "p", "Evaluate the value of expression", cmd_p },
 	{ "w", "Set watchpoint", cmd_w },
-	{ "d", "Delete watchpoint", cmd_d }
+	{ "d", "Delete watchpoint", cmd_d },
+	{"bt", "print the stack link", cmd_bt},
 
 };
 
