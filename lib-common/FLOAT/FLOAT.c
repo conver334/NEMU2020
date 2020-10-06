@@ -73,7 +73,7 @@ FLOAT f2F(float a) {
 }
 
 FLOAT Fabs(FLOAT a) {
-	return a<0?-a:a;
+	return a*getsign(getflag(a));
 }
 
 /* Functions below are already implemented */
