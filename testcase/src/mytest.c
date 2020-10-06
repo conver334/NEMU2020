@@ -4,7 +4,8 @@ struct node{
 	int s,t;
 }a[1010];
 int max(int x,int y){
-	return x>y?x:y;
+if(x>y)return x;
+else return y;
 }
 int main(){
 	n=16,L=10;

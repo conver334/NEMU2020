@@ -7,6 +7,23 @@ extern char _fpmaxtostr;
 extern int __stdio_fwrite(char *buf, int len, FILE *stream);
 extern char _ppfs_setargs;
 #define nop 0x90
+int p[20] = {0, 500000000, 250000000, 125000000, 62500000, 31250000, 15625000, 7812500, 3906250, 1953125, 976562, 488281, 244140, 122070, 61035, 30517, 15258, };
+
+int trans(int floatZone){
+    int i;
+	int bound = 9;
+    int res = 0;
+    for(i = 1; i <= 16; i++){
+        // if((floatZone >> (16 - i)) & 1 == 1){
+		if(floatZone & (1 << (16 - i))){
+			res += p[i];
+			// m += mod[i];
+        }
+    }
+
+	res /= 1000;	
+    return res;
+}
 __attribute__((used)) static int format_FLOAT(FILE *stream, FLOAT f) {
 	/* TODO: Format a FLOAT argument `f' and write the formating
 	 * result to `stream'. Keep the precision of the formating
@@ -15,11 +32,20 @@ __attribute__((used)) static int format_FLOAT(FILE *stream, FLOAT f) {
 	 *         0x00010000    "1.000000"
 	 *         0x00013333    "1.199996"
 	 */
-
 	char buf[80];
-	int len = sprintf(buf, "0x%08x", f);
+	int noS = f;
+    if((f >> 31) & 1) noS *= -1;
+    int intZone = noS >> 16;
+    int floatZone = noS & 0xffff;
+    char si[2] = "\0";
+    if((f >> 31) & 1) si[0] = '-', si[1] = '\0';
+    int res = trans(floatZone);
+
+	// int len = sprintf(buf, "0x%08x", f);
+	int len = sprintf(buf, "%s%d.%06u", si, intZone, res);
 	return __stdio_fwrite(buf, len, stream);
 }
+
 
 static void modify_vfprintf() {
 	char *place = &_vfprintf_internal;
