@@ -5,7 +5,8 @@
 extern char _vfprintf_internal;
 extern char _fpmaxtostr;
 extern int __stdio_fwrite(char *buf, int len, FILE *stream);
-
+extern char _ppfs_setargs;
+#define nop 0x90
 __attribute__((used)) static int format_FLOAT(FILE *stream, FLOAT f) {
 	/* TODO: Format a FLOAT argument `f' and write the formating
 	 * result to `stream'. Keep the precision of the formating
@@ -21,6 +22,27 @@ __attribute__((used)) static int format_FLOAT(FILE *stream, FLOAT f) {
 }
 
 static void modify_vfprintf() {
+	char *place = &_vfprintf_internal;
+	char *call = place + 0x306;
+	char *pre = call - 100;
+	int offSet = (int)format_FLOAT -  (int)(&_fpmaxtostr);
+	int *off = (int*)(call + 1);
+	int originOff = *off;
+	*off = originOff + offSet;
+
+	char *fop = call - 10;
+	*fop = 0xff;
+	*(fop + 1) = 0x32;
+	*(fop + 2) = nop;
+	char *stackSize = fop - 1;
+	*stackSize -= 4;
+
+	char *fop1 = fop - 20;
+	*fop1 = nop;
+	*(fop1 + 1) = nop;
+	char *fop2 = fop1 - 4;
+	*fop2 = nop;
+	*(fop2 + 1)= nop;
 	/* TODO: Implement this function to hijack the formating of "%f"
 	 * argument during the execution of `_vfprintf_internal'. Below
 	 * is the code section in _vfprintf_internal() relative to the
@@ -72,7 +94,16 @@ static void modify_ppfs_setargs() {
 	 * Below is the code section in _vfprintf_internal() relative to
 	 * the modification.
 	 */
-
+	char *ppfs = &_ppfs_setargs;
+	// 0xe9
+	char *lea = ppfs + 0x71;
+	// 801387 - 801355
+	int offSet = 0x2D;
+	*lea = 0xE9;
+	*(lea + 1) = offSet;
+	*(lea + 2) = 0;
+	*(lea + 3) = 0;
+	*(lea + 4) = 0;
 #if 0
 	enum {                          /* C type: */
 		PA_INT,                       /* int */
