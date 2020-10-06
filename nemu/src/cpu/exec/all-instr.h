@@ -41,6 +41,7 @@
 #include "logic/test.h"
 #include "control-tran/jcc.h"
 #include "control-tran/jmp.h"
+#include "control-tran/bt.h"
 #include "data-mov/pop.h"
 #include "arith/cmp.h"
 #include "arith/add.h"
