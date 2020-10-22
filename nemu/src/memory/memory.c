@@ -1,4 +1,6 @@
 #include "common.h"
+#include "burst.h"
+#include "memory/cache.h"
 
 uint32_t dram_read(hwaddr_t, size_t);
 void dram_write(hwaddr_t, size_t, uint32_t);
@@ -9,13 +11,26 @@ void dram_write(hwaddr_t, size_t, uint32_t);
 //~0u   0（unsigned int 类型 32位）按位取反后 右移
 uint32_t hwaddr_read(hwaddr_t addr, size_t len) {
 	uint32_t offset = addr & (BLOCK_SIZE-1);
-	uint32_t block = 
-	return dram_read(addr, len) & (~0u >> ((4 - len) << 3));
-
+	uint32_t block = cache_read(addr);
+	uint8_t temp[4];
+	memset (temp,0,sizeof (temp));
+	if (offset + len >= BLOCK_SIZE) {
+		uint32_t _block = cache_read(addr + len);
+		memcpy(temp , cache[block].data + offset, BLOCK_SIZE - offset);
+		memcpy(temp + BLOCK_SIZE - offset,cache[_block].data, len - (BLOCK_SIZE - offset));
+	}
+	else{
+		memcpy(temp,cache[block].data + offset,len);
+	}
+	int zero = 0;
+	uint32_t tmp = unalign_rw(temp + zero, 4) & (~0u >> ((4 - len) << 3)); 
+	return tmp; 
+	// return dram_read(addr, len) & (~0u >> ((4 - len) << 3));
 }
 
 void hwaddr_write(hwaddr_t addr, size_t len, uint32_t data) {
-	dram_write(addr, len, data);
+	// dram_write(addr, len, data);
+	cache_write(addr, len, data);
 }
 
 uint32_t lnaddr_read(lnaddr_t addr, size_t len) {

@@ -47,5 +47,5 @@ struct Cache2 {
 void init_cache();
 uint32_t cache2_read(hwaddr_t addr);
 uint32_t cache_read(hwaddr_t addr);
-
+void cache_write(hwaddr_t addr, size_t len,uint32_t data);
 #endif

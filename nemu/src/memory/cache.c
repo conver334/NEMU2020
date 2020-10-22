@@ -79,4 +79,49 @@ uint32_t cache_read(hwaddr_t addr){
     memcpy (cache[i].data,cache2[j].data,BLOCK_SIZE);
     return i;
 }
-
+void cache2_write(hwaddr_t addr, size_t len,uint32_t data) {
+    uint32_t group_num = (addr >> BLOCK_SIZE_BIT) & ((1 << GROUP_BIT_L2) - 1);//2^12组
+	uint32_t offset = addr & (BLOCK_SIZE - 1);
+    uint32_t tag = addr>>(BLOCK_SIZE_BIT+GROUP_BIT_L2);
+	int i;
+	bool v = false;
+	for (i = group_num * ASSOCIATIVE_WAY_L2 ; i < (group_num + 1) *  ASSOCIATIVE_WAY_L2 ;i ++){
+		if (cache2[i].tag == tag && cache2[i].valid){
+			cache2[i].dirty = true;
+			if(offset + len > CACHE2_BLOCK_SIZE) {//across
+				//dram_write(addr, CACHE2_BLOCK_SIZE - offset, data);	//write through
+				memcpy(cache2[i].data + offset, &data, CACHE2_BLOCK_SIZE - offset);
+				writeCache2(addr + CACHE2_BLOCK_SIZE - offset, len - CACHE2_BLOCK_SIZE + offset, data >> (CACHE2_BLOCK_SIZE - offset));
+			} else {
+				//dram_write(addr, len, data);	//write through
+				memcpy(cache2[i].data + offset, &data, len);
+			}
+			return;
+		}
+	}
+	if (!v)i = secondarycache_read (addr);
+	cache2[i].dirty = true;
+	memcpy (cache2[i].data + offset , &data , len);
+}
+void cache_write(hwaddr_t addr, size_t len,uint32_t data) {
+	uint32_t group_num = (addr>>BLOCK_SIZE_BIT) & 0x7f; 
+	uint32_t offset = addr & (BLOCK_SIZE - 1); 
+    uint32_t tag = addr>>(BLOCK_SIZE_BIT + GROUP_BIT_L1);
+	int i;
+	for (i = group_num * ASSOCIATIVE_WAY_L1 ; i < (group_num + 1) * ASSOCIATIVE_WAY_L1  ;i ++){
+        if ( cache[i].valid && cache[i].tag ==tag){
+			if(offset + len > BLOCK_SIZE) {
+				dram_write(addr, BLOCK_SIZE - offset, data);
+				memcpy(cache[i].data + offset, &data, BLOCK_SIZE - offset);
+				cache2_write(addr, BLOCK_SIZE - offset, data);
+				cache2_write(addr + BLOCK_SIZE - offset, len - BLOCK_SIZE + offset, data >> (BLOCK_SIZE - offset));
+			} else {
+				dram_write(addr, len, data);
+				memcpy(cache[i].data + offset, &data, len);
+				cache2_write(addr, len, data);
+			}
+			return;
+		}
+	}
+	cache2_write(addr,len,data);
+}
