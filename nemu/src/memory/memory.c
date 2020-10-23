@@ -10,21 +10,39 @@ void dram_write(hwaddr_t, size_t, uint32_t);
 //size_t size type 类型大小
 //~0u   0（unsigned int 类型 32位）按位取反后 右移
 uint32_t hwaddr_read(hwaddr_t addr, size_t len) {
-	uint32_t offset = addr & (BLOCK_SIZE-1);
-	uint32_t block = cache_read(addr);
-	uint8_t temp[4];
-	memset (temp,0,sizeof (temp));
-	if (offset + len >= BLOCK_SIZE) {
-		uint32_t _block = cache_read(addr + len);
-		memcpy(temp , cache[block].data + offset, BLOCK_SIZE - offset);
-		memcpy(temp + BLOCK_SIZE - offset,cache[_block].data, len - (BLOCK_SIZE - offset));
+	int cache1_index = cache_read(addr);
+	uint32_t block_bias = addr & (BLOCK_SIZE - 1);
+	uint8_t temp[BURST_LEN << 1];
+	//如果跨域了边界
+	if(block_bias + len > BLOCK_SIZE){
+		int cache2_index = cache_read(addr + BLOCK_SIZE - block_bias);
+		memcpy(temp, cache[cache1_index].data + block_bias, BLOCK_SIZE - block_bias);
+		memcpy(temp  + BLOCK_SIZE - block_bias, cache[cache2_index].data, len - (BLOCK_SIZE - block_bias));
 	}
-	else{
-		memcpy(temp,cache[block].data + offset,len);
+	else {
+		memcpy(temp, cache[cache1_index].data + block_bias, len);
 	}
-	int zero = 0;
-	uint32_t tmp = unalign_rw(temp + zero, 4) & (~0u >> ((4 - len) << 3)); 
-	return tmp; 
+	int tmp = 0;
+	uint32_t ans = unalign_rw(temp + tmp, 4) & (~0u >> ((4 - len) << 3));
+	
+	return ans;
+	// return dram_read(addr, len) & (~0u >> ((4 - len) << 3));
+	
+	// uint32_t offset = addr & (BLOCK_SIZE-1);
+	// uint32_t block = cache_read(addr);
+	// uint8_t temp[4];
+	// memset (temp,0,sizeof (temp));
+	// if (offset + len >= BLOCK_SIZE) {
+	// 	uint32_t _block = cache_read(addr + len);
+	// 	memcpy(temp , cache[block].data + offset, BLOCK_SIZE - offset);
+	// 	memcpy(temp + BLOCK_SIZE - offset,cache[_block].data, len - (BLOCK_SIZE - offset));
+	// }
+	// else{
+	// 	memcpy(temp,cache[block].data + offset,len);
+	// }
+	// int zero = 0;
+	// uint32_t tmp = unalign_rw(temp + zero, 4) & (~0u >> ((4 - len) << 3)); 
+	// return tmp; 
 	// return dram_read(addr, len) & (~0u >> ((4 - len) << 3));
 }
 
