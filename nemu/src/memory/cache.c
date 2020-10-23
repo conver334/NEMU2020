@@ -50,7 +50,7 @@ uint32_t cache2_read(hwaddr_t addr){
         }
 	}
 	for(i = 0; i < BLOCK_SIZE / BURST_LEN; i++){
-        ddr3_read_ref(block + BURST_LEN * i, cache2[qwq].data + BURST_LEN * i);
+        ddr3_read_me(block + BURST_LEN * i, cache2[qwq].data + BURST_LEN * i);
     }
     // for(i = group_num * ASSOCIATIVE_WAY_L2 ; i < (group_num + 1) * ASSOCIATIVE_WAY_L2; i++){
     //     if(!cache2[i].valid)break;
