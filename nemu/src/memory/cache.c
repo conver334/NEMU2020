@@ -4,9 +4,12 @@
 #include <stdlib.h>
 #include <time.h>
 #define random(x) (rand()%x)
-
+void ddr3_read_me(hwaddr_t addr, void *data);
+void ddr3_write_me(hwaddr_t addr, void *data, uint8_t *mask);
+uint32_t dram_read(hwaddr_t addr, size_t len) ;
+void dram_write(hwaddr_t addr, size_t len, uint32_t data);
 void init_cache() {
-	int i, j, block_num=CACHE_SIZE/BLOCK_SIZE;
+	int i, block_num=CACHE_SIZE/BLOCK_SIZE;
 	for(i = 0; i < block_num; i ++) {
 		cache[i].valid=0;
 		cache[i].tag=0;
@@ -22,7 +25,7 @@ cache 存储空间的大小为 4MB  =2+10+10
 2^16 行 = 2^12组 * 2^4行/组
 */
 uint32_t cache2_read(hwaddr_t addr){
-	uint32_t group_num = (addr >> BLOCK_SIZE_BIT) & ((1 << GROUP_BIT_L2) - 1);//2^12组
+	uint32_t group_num = (addr >> BLOCK_SIZE_BIT) & ((1 << GROUP_BIT_L2)  -  1);//2^12组
     uint32_t tag = addr>>(BLOCK_SIZE_BIT+GROUP_BIT_L2);
     uint32_t block =  (addr >> BLOCK_SIZE_BIT)<< BLOCK_SIZE_BIT;
 	int i;
@@ -43,13 +46,13 @@ uint32_t cache2_read(hwaddr_t addr){
             uint8_t mask[BURST_LEN * 2];
             memset(mask, 1, BURST_LEN * 2);
             for (j = 0;j < BLOCK_SIZE/BURST_LEN;j ++)
-            ddr3_write(block + j * BURST_LEN, cache2[i].data + j * BURST_LEN, mask);
+            ddr3_write_me(block + j * BURST_LEN, cache2[i].data + j * BURST_LEN, mask);
         }
     }
     cache2[i].valid = true;
     cache2[i].dirty = false;
     cache2[i].tag = tag;
-    ddr3_read(block + j * BURST_LEN , cache2[i].data + j * BURST_LEN);
+    ddr3_read_me(block + j * BURST_LEN , cache2[i].data + j * BURST_LEN);
     return i;
 }
 /*
@@ -87,9 +90,9 @@ void cache2_write(hwaddr_t addr, size_t len,uint32_t data) {
 	for (i = group_num * ASSOCIATIVE_WAY_L2 ; i < (group_num + 1) *  ASSOCIATIVE_WAY_L2 ;i ++){
 		if (cache2[i].tag == tag && cache2[i].valid){
 			cache2[i].dirty = true;
-			if(offset + len > CACHE2_BLOCK_SIZE) {//across
-				memcpy(cache2[i].data + offset, &data, CACHE2_BLOCK_SIZE - offset);
-				writeCache2(addr + CACHE2_BLOCK_SIZE - offset, len - CACHE2_BLOCK_SIZE + offset, data >> (CACHE2_BLOCK_SIZE - offset));
+			if(offset + len > BLOCK_SIZE) {//across
+				memcpy(cache2[i].data + offset, &data, BLOCK_SIZE - offset);
+				cache2_write(addr + BLOCK_SIZE - offset, len - BLOCK_SIZE + offset, data >> (BLOCK_SIZE - offset));
 			} else {
 				memcpy(cache2[i].data + offset, &data, len);
 			}
