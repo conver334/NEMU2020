@@ -128,12 +128,13 @@ void cache_write(hwaddr_t addr, size_t len,uint32_t data) {
     uint32_t tag = addr>>(BLOCK_SIZE_BIT + GROUP_BIT_L1);
 	int i;
 	for (i = group_num * ASSOCIATIVE_WAY_L1 ; i < (group_num + 1) * ASSOCIATIVE_WAY_L1  ;i ++){
-        if ( cache[i].valid && cache[i].tag ==tag){
+        if ( cache[i].valid && cache[i].tag == tag){
 			if(offset + len > BLOCK_SIZE) {
 				dram_write(addr, BLOCK_SIZE - offset, data);
 				memcpy(cache[i].data + offset, &data, BLOCK_SIZE - offset);
 				cache2_write(addr, BLOCK_SIZE - offset, data);
-				cache2_write(addr + BLOCK_SIZE - offset, len - BLOCK_SIZE + offset, data >> (BLOCK_SIZE - offset));
+				cache_write(addr + BLOCK_SIZE - offset,len - (BLOCK_SIZE - offset),data >> (BLOCK_SIZE - offset));
+				// cache2_write(addr + BLOCK_SIZE - offset, len - BLOCK_SIZE + offset, data >> (BLOCK_SIZE - offset));
 			}
 			else {
 				dram_write(addr, len, data);
