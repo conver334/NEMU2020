@@ -7,8 +7,8 @@
 #define CACHE_SIZE  (1<<CACHE_SIZE_BIT )
 #define ASSOCIATIVE_WAY_L1 8
 #define WAY_BIT_L1 3
-#define GROUP_BIT_L1  (CACHE_SIZE_BIT-BLOCK_SIZE_BIT-WAY_BIT_L1)
-
+// #define GROUP_BIT_L1  (CACHE_SIZE_BIT-BLOCK_SIZE_BIT-WAY_BIT_L1)
+#define GROUP_BIT_L1 7
 /*
 cache block 存储空间的大小为 64B 
 cache 存储空间的大小为 64KB 
@@ -22,8 +22,8 @@ not write allocate
 #define CACHE2_SIZE  (1<<CACHE2_SIZE_BIT )
 #define ASSOCIATIVE_WAY_L2 16
 #define WAY_BIT_L2 4
-#define GROUP_BIT_L2  (CACHE2_SIZE_BIT-BLOCK_SIZE_BIT-WAY_BIT_L2)
-
+// #define GROUP_BIT_L2  (CACHE2_SIZE_BIT-BLOCK_SIZE_BIT-WAY_BIT_L2)
+#define GROUP_BIT_L2 12
 /*
 cache block 存储空间的大小为 64B 
 cache 存储空间的大小为 4MB  =2+10+10

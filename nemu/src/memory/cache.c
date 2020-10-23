@@ -9,11 +9,16 @@ void ddr3_write_me(hwaddr_t addr, void *data, uint8_t *mask);
 uint32_t dram_read(hwaddr_t addr, size_t len) ;
 void dram_write(hwaddr_t addr, size_t len, uint32_t data);
 void init_cache() {
-	int i, block_num=CACHE_SIZE/BLOCK_SIZE;
+	int i, block_num = CACHE_SIZE/BLOCK_SIZE;
 	for(i = 0; i < block_num; i ++) {
 		cache[i].valid=0;
-		cache[i].tag=0;
-		memset(cache[i].data,0,BLOCK_SIZE);
+		// cache[i].tag=0;
+		// memset(cache[i].data,0,BLOCK_SIZE);
+	}
+	block_num = CACHE2_SIZE/BLOCK_SIZE;
+	for(i = 0; i < block_num; i ++) {
+		cache2[i].valid=0;
+		cache2[i].dirty=0;
 	}
 }
 
