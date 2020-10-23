@@ -40,25 +40,36 @@ uint32_t cache2_read(hwaddr_t addr){
 		}
 	}
 	
-    int j;
-    for(i = group_num * ASSOCIATIVE_WAY_L2 ; i < (group_num + 1) * ASSOCIATIVE_WAY_L2; i++){
-        if(!cache2[i].valid)break;
-    }
-    if(i == (group_num + 1) * ASSOCIATIVE_WAY_L2){
-            srand((int)time(0));
-            i = group_num * ASSOCIATIVE_WAY_L2 + random(ASSOCIATIVE_WAY_L2);
-            if(cache2[i].dirty){
-            uint8_t mask[BURST_LEN * 2];
-            memset(mask, 1, BURST_LEN * 2);
-            for (j = 0;j < BLOCK_SIZE/BURST_LEN;j ++)
-            ddr3_write_me(block + j * BURST_LEN, cache2[i].data + j * BURST_LEN, mask);
+	srand((int)time(0));
+	int qwq = group_num * ASSOCIATIVE_WAY_L2 + random(ASSOCIATIVE_WAY_L2);
+	if(cache2[qwq].valid && cache2[qwq].dirty){
+		uint8_t tmp[BURST_LEN << 1];
+        memset(tmp, 1, sizeof(tmp));
+        for(i = 0; i < BLOCK_SIZE / BURST_LEN; i++){
+            ddr3_write_me(block + BURST_LEN * i, cache2[qwq].data + BURST_LEN * i, tmp);
         }
+	}
+	for(i = 0; i < BLOCK_SIZE / BURST_LEN; i++){
+        ddr3_read_ref(block + BURST_LEN * i, cache2[qwq].data + BURST_LEN * i);
     }
+    // for(i = group_num * ASSOCIATIVE_WAY_L2 ; i < (group_num + 1) * ASSOCIATIVE_WAY_L2; i++){
+    //     if(!cache2[i].valid)break;
+    // }
+    // if(i == (group_num + 1) * ASSOCIATIVE_WAY_L2){
+    //         srand((int)time(0));
+    //         i = group_num * ASSOCIATIVE_WAY_L2 + random(ASSOCIATIVE_WAY_L2);
+    //         if(cache2[i].dirty){
+    //         uint8_t mask[BURST_LEN * 2];
+    //         memset(mask, 1, BURST_LEN * 2);
+    //         for (j = 0;j < BLOCK_SIZE/BURST_LEN;j ++)
+    //         ddr3_write_me(block + j * BURST_LEN, cache2[i].data + j * BURST_LEN, mask);
+    //     }
+    // }
     cache2[i].valid = true;
     cache2[i].dirty = false;
     cache2[i].tag = tag;
-    ddr3_read_me(block + j * BURST_LEN , cache2[i].data + j * BURST_LEN);
-    return i;
+    // ddr3_read_me(block + j * BURST_LEN , cache2[i].data + j * BURST_LEN);
+    return qwq;
 }
 /*
 8-way  set associative  每组有8行
