@@ -109,7 +109,7 @@ void cache2_write(hwaddr_t addr, size_t len,uint32_t data) {
 	for (i = group_num * ASSOCIATIVE_WAY_L2 ; i < (group_num + 1) *  ASSOCIATIVE_WAY_L2 ;i ++){
 		if (cache2[i].tag == tag && cache2[i].valid){
 			cache2[i].dirty = true;
-			if(offset + len > BLOCK_SIZE) {//across
+			if(offset + len > BLOCK_SIZE) {//边界
 				memcpy(cache2[i].data + offset, &data, BLOCK_SIZE - offset);
 				cache2_write(addr + BLOCK_SIZE - offset, len - BLOCK_SIZE + offset, data >> (BLOCK_SIZE - offset));
 			} else {
