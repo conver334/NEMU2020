@@ -69,19 +69,22 @@ uint32_t cache_read(hwaddr_t addr){
     uint32_t tag = addr>>(BLOCK_SIZE_BIT + GROUP_BIT_L1);
 	int i;
 	for(i = group_num * ASSOCIATIVE_WAY_L1 ; i < (group_num + 1) * ASSOCIATIVE_WAY_L1; i++){
-		if (cache[i].valid && cache[i].tag == (addr>>13)){
+		if (cache[i].valid && cache[i].tag == tag){
 			return i;
 		}
 	}
 	
     int j = cache2_read(addr);
-    for(i = group_num * ASSOCIATIVE_WAY_L1 ; i < (group_num + 1) * ASSOCIATIVE_WAY_L1; i++){
-        if(!cache[i].valid)break;
-    }
-    if(i == (group_num + 1) * ASSOCIATIVE_WAY_L1){
-            srand((int)time(0));
-            i = group_num * ASSOCIATIVE_WAY_L1 + random(ASSOCIATIVE_WAY_L1);
-    }
+	srand((int)time(0));
+	i = group_num * ASSOCIATIVE_WAY_L1 + random(ASSOCIATIVE_WAY_L1);
+	
+    // for(i = group_num * ASSOCIATIVE_WAY_L1 ; i < (group_num + 1) * ASSOCIATIVE_WAY_L1; i++){
+    //     if(!cache[i].valid)break;
+    // }
+    // if(i == (group_num + 1) * ASSOCIATIVE_WAY_L1){
+    //         
+    //         i = 
+    // }
     cache[i].valid = true;
     cache[i].tag = tag;
     memcpy (cache[i].data,cache2[j].data,BLOCK_SIZE);
