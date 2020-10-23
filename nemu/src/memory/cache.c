@@ -84,22 +84,19 @@ void cache2_write(hwaddr_t addr, size_t len,uint32_t data) {
 	uint32_t offset = addr & (BLOCK_SIZE - 1);
     uint32_t tag = addr>>(BLOCK_SIZE_BIT+GROUP_BIT_L2);
 	int i;
-	bool v = false;
 	for (i = group_num * ASSOCIATIVE_WAY_L2 ; i < (group_num + 1) *  ASSOCIATIVE_WAY_L2 ;i ++){
 		if (cache2[i].tag == tag && cache2[i].valid){
 			cache2[i].dirty = true;
 			if(offset + len > CACHE2_BLOCK_SIZE) {//across
-				//dram_write(addr, CACHE2_BLOCK_SIZE - offset, data);	//write through
 				memcpy(cache2[i].data + offset, &data, CACHE2_BLOCK_SIZE - offset);
 				writeCache2(addr + CACHE2_BLOCK_SIZE - offset, len - CACHE2_BLOCK_SIZE + offset, data >> (CACHE2_BLOCK_SIZE - offset));
 			} else {
-				//dram_write(addr, len, data);	//write through
 				memcpy(cache2[i].data + offset, &data, len);
 			}
 			return;
 		}
 	}
-	if (!v)i = secondarycache_read (addr);
+	i = cache2_read (addr);
 	cache2[i].dirty = true;
 	memcpy (cache2[i].data + offset , &data , len);
 }
@@ -115,7 +112,8 @@ void cache_write(hwaddr_t addr, size_t len,uint32_t data) {
 				memcpy(cache[i].data + offset, &data, BLOCK_SIZE - offset);
 				cache2_write(addr, BLOCK_SIZE - offset, data);
 				cache2_write(addr + BLOCK_SIZE - offset, len - BLOCK_SIZE + offset, data >> (BLOCK_SIZE - offset));
-			} else {
+			}
+			else {
 				dram_write(addr, len, data);
 				memcpy(cache[i].data + offset, &data, len);
 				cache2_write(addr, len, data);
