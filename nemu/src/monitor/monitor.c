@@ -73,6 +73,15 @@ static void load_entry() {
 	assert(ret == 1);
 	fclose(fp);
 }
+static void init_cr0(){
+	cpu.cr0.protect_enable = 0;
+	cpu.cr0.paging = 0;
+}
+
+static void init_CS(){
+	cpu.cs.base = 0;
+	cpu.cs.limit = 0xffffffff;
+}
 
 void restart() {
 	/* Perform some initialization to restart a program */
@@ -86,11 +95,16 @@ void restart() {
 
 	/* Set the initial instruction pointer. */
 	cpu.eip = ENTRY_START;
-        cpu.eflags.val = 0x2;
+    cpu.eflags.val = 0x2;
 
 	/* Initialize DRAM. */
 	init_ddr3();
 
 	/*Initialize Cache*/
 	init_cache();
+
+	init_cr0();
+	init_CS();
+
+	
 }
