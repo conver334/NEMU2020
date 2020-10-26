@@ -36,6 +36,8 @@ typedef struct {
 			uint32_t eax, ecx, edx, ebx, esp, ebp, esi, edi;
 		};
 	};
+
+	swaddr_t eip; 
 	union {
 		struct {
 			uint32_t CF		:1;
@@ -58,8 +60,6 @@ typedef struct {
 		uint32_t val;
 	} eflags;
 		 
-	
-	swaddr_t eip;
 
 	struct GDTR{
 		uint32_t base;
