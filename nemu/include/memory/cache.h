@@ -39,14 +39,14 @@ typedef struct  {
 	bool valid;
 	int tag;
 	uint8_t data[BLOCK_SIZE];
-}Cache;
-Cache cache[CACHE_SIZE/BLOCK_SIZE];
+}Cache_zsm;
+Cache_zsm cache_zsm[CACHE_SIZE/BLOCK_SIZE];
 typedef struct{
 	bool valid,dirty;
 	int tag;
 	uint8_t data[BLOCK_SIZE];
-} Cache2 ;
-Cache2 cache2[CACHE2_SIZE/BLOCK_SIZE];
+} Cache2_zsm ;
+Cache2_zsm cache2_zsm[CACHE2_SIZE/BLOCK_SIZE];
 
 void init_cache();
 
