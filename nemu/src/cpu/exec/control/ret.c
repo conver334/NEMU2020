@@ -1,6 +1,7 @@
 #include "cpu/exec/helper.h"
 
 make_helper(ret) {
+	current_sreg = R_SS;
 	cpu.eip = swaddr_read(cpu.esp, 4) - 1;
 	cpu.esp += 4;
 
@@ -10,6 +11,7 @@ make_helper(ret) {
 }
 
 make_helper(ret_i) {
+	current_sreg = R_SS;
 	uint16_t imm = instr_fetch(eip + 1, 2);
 	cpu.eip = swaddr_read(cpu.esp, 4) - (2 + 1);
 	cpu.esp += 4 + imm;
