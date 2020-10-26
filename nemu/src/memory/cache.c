@@ -1,8 +1,12 @@
-#include "common.h"
-#include "burst.h"
-#include "memory/cache.h"
-#include <stdlib.h>
+// #include "common.h"
+// #include "burst.h"
+// #include "memory/cache.h"
+// #include <stdlib.h>
+// #include <time.h>
+#include "nemu.h"
 #include <time.h>
+#include "burst.h"
+#include <stdlib.h>
 #define random(x) (rand()%x)
 void ddr3_read_me(hwaddr_t addr, void *data);
 void ddr3_write_me(hwaddr_t addr, void *data, uint8_t *mask);

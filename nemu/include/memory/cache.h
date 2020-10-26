@@ -35,16 +35,18 @@ cache 存储空间的大小为 4MB  =2+10+10
 write back 
 write allocate 
 */
-struct Cache {
+typedef struct  {
 	bool valid;
 	int tag;
 	uint8_t data[BLOCK_SIZE];
-}cache[CACHE_SIZE/BLOCK_SIZE];
-struct Cache2 {
+}Cache;
+Cache cache[CACHE_SIZE/BLOCK_SIZE];
+typedef struct{
 	bool valid,dirty;
 	int tag;
 	uint8_t data[BLOCK_SIZE];
-}cache2[CACHE2_SIZE/BLOCK_SIZE];
+} Cache2 ;
+Cache2 cache2[CACHE2_SIZE/BLOCK_SIZE];
 
 void init_cache();
 
