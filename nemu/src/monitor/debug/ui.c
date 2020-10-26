@@ -57,6 +57,7 @@ static int cmd_info(char *args) {
 
 /* Add examine memory */
 static int cmd_x(char *args) {
+	current_sreg = R_DS;
 	char *arg = strtok(NULL, " ");
 	int n;
 	swaddr_t addr;
@@ -132,6 +133,7 @@ static int cmd_bt(char *args) {
 	uint32_t ebp = cpu.ebp;
 	uint32_t eip = cpu.eip;
 	int i = 0;
+	current_sreg = R_SS;
 	while(ebp != 0) {
 		sf.args[0] = swaddr_read(ebp + 8, 4);
 		sf.args[1] = swaddr_read(ebp + 12, 4);

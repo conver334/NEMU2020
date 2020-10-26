@@ -3,6 +3,7 @@
 #define instr push
 
 static void do_execute() {
+	current_sreg = R_SS;
 	swaddr_write(cpu.esp - 4, 4, op_src->val);
 	cpu.esp -= 4;
 	print_asm_template1();
