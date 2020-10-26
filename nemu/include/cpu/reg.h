@@ -52,15 +52,11 @@ typedef struct {
 			uint32_t OF		:1;
 			uint32_t IOPL	:2;
 			uint32_t NT		:1;
-			// uint32_t pad3	:1;
-			// uint16_t pad4;
-			uint32_t : 1;
-			uint32_t RF:1;
-			uint32_t VM:1;
-			uint32_t : 14;
+			uint32_t pad3	:1;
+			uint16_t pad4;
 		};
-		uint32_t eflags;
-	};
+		uint32_t val;
+	} eflags;
 		 
 	
 	swaddr_t eip;
@@ -111,6 +107,7 @@ typedef struct{
 		uint32_t part2;
 	};
 }sreg_descriptor;
+
 sreg_descriptor *sreg_desc;
 
 uint8_t current_sreg;
