@@ -6,5 +6,5 @@
 #include "memory/cache.h"
 #include "cpu/reg.h"
 #include "cpu/eflags.h"
-
+#include "memory/tlb.h"
 #endif

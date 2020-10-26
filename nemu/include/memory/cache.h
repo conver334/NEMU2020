@@ -1,6 +1,8 @@
 #ifndef __CACHE_H__
 #define __CACHE_H_
 
+#include "common.h"
+
 #define BLOCK_SIZE_BIT 6
 #define BLOCK_SIZE  (1<<BLOCK_SIZE_BIT)
 #define CACHE_SIZE_BIT 16
@@ -45,7 +47,10 @@ struct Cache2 {
 }cache2[CACHE2_SIZE/BLOCK_SIZE];
 
 void init_cache();
-uint32_t cache2_read(hwaddr_t addr);
+
 uint32_t cache_read(hwaddr_t addr);
 void cache_write(hwaddr_t addr, size_t len,uint32_t data);
+uint32_t cache2_read(hwaddr_t addr);
+void cache2_write(hwaddr_t addr, size_t len,uint32_t data);
+
 #endif
