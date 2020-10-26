@@ -25,7 +25,7 @@ typedef uint16_t ioaddr_t;
 
 #pragma pack (1)
 typedef union {
-	uint32_t _4;
+	uint32_t _4;	
 	uint32_t _3	: 24;
 	uint16_t _2;
 	uint8_t _1;
