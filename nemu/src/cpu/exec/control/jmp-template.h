@@ -36,14 +36,14 @@ static void do_execute(){
     print_asm_template1();
 }
 
-make_instr_helper(i);
-make_instr_helper(rm);
+make_instr_helper(i)
+make_instr_helper(rm)
 
 #if DATA_BYTE == 4
 
-extern Sreg_Descriptor *sreg_desc;
+extern sreg_descriptor *sreg_desc;
 
-Sreg_Descriptor new_sreg_desc;
+sreg_descriptor new_sreg_desc;
 
 make_helper(ljmp){
     sreg_desc = &new_sreg_desc;
