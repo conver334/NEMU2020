@@ -148,6 +148,31 @@ static int cmd_bt(char *args) {
 	return 0;
 }
 
+/*
+add  addr
+*/
+hwaddr_t page_translate_without_assert(lnaddr_t addr, int* success);
+static int cmd_page(char *args){
+	if(args == NULL) {
+		printf("Nothing entered\n");
+	}
+	else {
+		uint32_t addr;
+		sscanf(args, "%x", &addr);
+		int ok = 0;
+		uint32_t ans = page_translate_without_assert(addr, &ok);
+		if(ok == 0){
+			printf("0x%08x\n", ans);
+		}
+		else if(ok == 1){
+			printf("first level page fault\n");
+		}
+		else if(ok == 2){
+			printf("second level page fault\n");
+		}
+	}
+	return 0;
+}
 
 static int cmd_c(char *args) {
 	cpu_exec(-1);
@@ -177,6 +202,7 @@ static struct {
 	{ "w", "Set watchpoint", cmd_w },
 	{ "d", "Delete watchpoint", cmd_d },
 	{ "bt", "Display backtrace", cmd_bt }
+	{"page", "print result of page translation", cmd_page},
 
 };
 
