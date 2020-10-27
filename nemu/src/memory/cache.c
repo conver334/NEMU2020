@@ -15,7 +15,7 @@ void init_cache(){
     return ;
 }
 
-void ddr3_read_ref(hwaddr_t addr, void *data);
+void ddr3_read_me(hwaddr_t addr, void *data);
 
 // return whole index of way in cacheL1
 int read_Cache_L1(hwaddr_t addr){
@@ -44,7 +44,7 @@ int read_Cache_L1(hwaddr_t addr){
     return way_index;
 }
 
-void ddr3_write_ref(hwaddr_t addr, void *data, uint8_t *mask);
+void ddr3_write_me(hwaddr_t addr, void *data, uint8_t *mask);
 
 // return whole index of way in cacheL2
 int read_Cache_L2(hwaddr_t addr){
@@ -71,11 +71,11 @@ int read_Cache_L2(hwaddr_t addr){
         memset(tmp, 1, sizeof(tmp));
         uint32_t block_start_x = (cache_L2[way_index].tag << (Cache_L2_Set_Bit + Cache_Block_Bit)) | (set_index << Cache_Block_Bit);
         for(i = 0; i < Cache_Block_Size / BURST_LEN; i++){
-            ddr3_write_ref(block_start_x + BURST_LEN * i, cache_L2[way_index].data + BURST_LEN * i, tmp);
+            ddr3_write_me(block_start_x + BURST_LEN * i, cache_L2[way_index].data + BURST_LEN * i, tmp);
         }
     }
     for(i = 0; i < Cache_Block_Size / BURST_LEN; i++){
-        ddr3_read_ref(block_start + BURST_LEN * i, cache_L2[way_index].data + BURST_LEN * i);
+        ddr3_read_me(block_start + BURST_LEN * i, cache_L2[way_index].data + BURST_LEN * i);
     }
     cache_L2[way_index].valid_value = true;
     cache_L2[way_index].dirty_value = false;
