@@ -201,8 +201,8 @@ static struct {
         { "p", "Evaluate the value of expression", cmd_p },
 	{ "w", "Set watchpoint", cmd_w },
 	{ "d", "Delete watchpoint", cmd_d },
-	{ "bt", "Display backtrace", cmd_bt }
-	{"page", "print result of page translation", cmd_page},
+	{ "bt", "Display backtrace", cmd_bt },
+	{"page", "print result of page translation", cmd_page}
 
 };
 
