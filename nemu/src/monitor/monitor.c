@@ -106,5 +106,5 @@ void restart() {
 	init_cr0();
 	init_CS();
 
-	
+	init_tlb();
 }

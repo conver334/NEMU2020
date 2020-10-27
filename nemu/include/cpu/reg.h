@@ -116,6 +116,25 @@ void sreg_load(uint8_t);
 
 extern CPU_state cpu;
 
+
+typedef struct{
+	union{
+		struct{
+			uint32_t p     :1;
+			uint32_t rw    :1;
+			uint32_t us    :1;
+			uint32_t       :2;
+			uint32_t a     :1;
+			uint32_t d     :1;
+			uint32_t       :2;
+			uint32_t avail :3;
+			uint32_t addr  :20;
+		};
+		uint32_t val;
+	};
+}Page_Descriptor;
+
+
 static inline int check_reg_index(int index) {
 	assert(index >= 0 && index < 8);
 	return index;
