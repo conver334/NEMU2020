@@ -180,12 +180,7 @@ void lnaddr_write(lnaddr_t addr, size_t len, uint32_t data) {
 		hwaddr_write(hwaddr, len, data);	
 	}
 }
-lnaddr_t seg_translate(swaddr_t addr, size_t len, uint8_t sreg_id){
-	if(cpu.cr0.protect_enable == 0) return addr;
-	else{
-		return cpu.sreg[sreg_id].base + addr;
-	}
-}
+
 
 
 uint32_t swaddr_read(swaddr_t addr, size_t len) {
