@@ -8,7 +8,7 @@ make_helper(concat(movs_, SUFFIX)) {
     current_sreg = R_ES;
 	swaddr_write(reg_l(R_EDI), DATA_BYTE, tmp);
 	
-    if (cpu.DF == 0){
+    if (cpu.eflags.DF == 0){
         reg_l (R_EDI) += DATA_BYTE;
         reg_l (R_ESI) += DATA_BYTE;
     }
