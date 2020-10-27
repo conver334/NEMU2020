@@ -1,5 +1,6 @@
 #include "cpu/exec/template-start.h"
-// #include "memory/tlb.h"
+#include "memory/tlb.h"
+
 #define instr mov
 
 static void do_execute() {
@@ -82,4 +83,5 @@ make_helper(mov_sreg2rm){
 	return 2;
 }
 #endif
+
 #include "cpu/exec/template-end.h"
