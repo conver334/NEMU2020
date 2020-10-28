@@ -8,7 +8,7 @@
 #include <readline/history.h>
 
 void cpu_exec(uint32_t);
-void display_reg();
+// void display_reg();
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 char* rl_gets() {
@@ -41,19 +41,41 @@ static int cmd_si(char *args) {
 }
 
 /* TODO: Add info command */
-static int cmd_info(char *args) {
-	char *arg = strtok(NULL, " ");
+// static int cmd_info(char *args) {
+// 	char *arg = strtok(NULL, " ");
 
-	if(arg != NULL) {
-		if(strcmp(arg, "r") == 0) {
-			display_reg();
+// 	if(arg != NULL) {
+// 		if(strcmp(arg, "r") == 0) {
+// 			display_reg();
+// 		}
+// 		else if(strcmp(arg, "w") == 0) {
+// 			list_watchpoint();
+// 		}
+// 	}
+// 	return 0;
+// }
+static int cmd_info(char *args) {
+	if(args == NULL || strlen(args) != 1){
+		printf("parameter fault\n");
+	}
+	else {
+		if(args[0] == 'r'){
+			int i;
+			for(i = R_EAX; i <= R_EDI; i++){
+				printf("%s   %x\n", regsl[i], reg_l(i));
+			}
 		}
-		else if(strcmp(arg, "w") == 0) {
-			list_watchpoint();
+		else if(args[0] == 'w'){
+			print_wp();
+		}
+		else {
+			printf("parameter fault\n");
 		}
 	}
 	return 0;
 }
+
+
 
 /* Add examine memory */
 static int cmd_x(char *args) {
