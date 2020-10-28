@@ -123,6 +123,7 @@ static int cmd_d(char *args) {
 
 /* Add display backtrace */
 static int cmd_bt(char *args) {
+	current_sreg = R_SS;
 	const char* find_fun_name(uint32_t eip);
 	struct {
 		swaddr_t prev_ebp;
@@ -133,7 +134,7 @@ static int cmd_bt(char *args) {
 	uint32_t ebp = cpu.ebp;
 	uint32_t eip = cpu.eip;
 	int i = 0;
-	current_sreg = R_SS;
+	
 	while(ebp != 0) {
 		sf.args[0] = swaddr_read(ebp + 8, 4);
 		sf.args[1] = swaddr_read(ebp + 12, 4);
