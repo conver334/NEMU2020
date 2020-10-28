@@ -2,21 +2,16 @@
 
 #define instr jmp
 
-// static void do_execute() {
-// 	cpu.eip += op_src->val;
-// 	print_asm(str(instr) " %x", cpu.eip + 1 + DATA_BYTE);
-// }
-
-// make_instr_helper(si)
-// #if DATA_BYTE == 4
-// make_helper(jmp_rm_l) {
-// 	int len = decode_rm_l(eip + 1);
-// 	cpu.eip = op_src->val - (len + 1);
-// 	print_asm(str(instr) " *%s", op_src->str);
-// 	return len + 1;
-// }
-
-static void do_execute(){ 
+static void do_execute(){
+    // DATA_TYPE_S displacement = op_src -> val;
+    // if(op_src -> type == OP_TYPE_REG || op_src -> type == OP_TYPE_MEM){
+    //     cpu.eip = displacement - concat(decode_rm_, SUFFIX)(cpu.eip + 1) - 1;
+    //     print_asm_template1();
+    // }
+    // else{
+    //     print_asm("jmp %x", cpu.eip + 1 + DATA_BYTE + displacement);
+    //     cpu.eip += displacement;
+    // }    
     DATA_TYPE_S imm = op_src -> val;
     if (op_src -> type == OP_TYPE_IMM){
         cpu.eip += imm;
@@ -32,9 +27,9 @@ make_instr_helper(rm)
 
 #if DATA_BYTE == 4
 
-extern sreg_descriptor *sreg_desc;
+extern Sreg_Descriptor *sreg_desc;
 
-sreg_descriptor new_sreg_desc;
+Sreg_Descriptor new_sreg_desc;
 
 make_helper(ljmp){
     sreg_desc = &new_sreg_desc;
@@ -72,5 +67,7 @@ make_helper(ljmp){
     print_asm("ljump %x %x",op2,op1);
     return 1 + 6;    
 }
+
 #endif
+
 #include "cpu/exec/template-end.h"
