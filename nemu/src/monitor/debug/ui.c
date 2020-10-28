@@ -66,7 +66,8 @@ static int cmd_info(char *args) {
 			}
 		}
 		else if(args[0] == 'w'){
-			print_wp();
+			// print_wp();
+			list_watchpoint();
 		}
 		else {
 			printf("parameter fault\n");
