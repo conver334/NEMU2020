@@ -82,7 +82,9 @@ static void init_CS(){
 	cpu.cs.base = 0;
 	cpu.cs.limit = 0xffffffff;
 }
-
+static void init_eflags() {
+	cpu.eflags = 2;
+}
 void restart() {
 	/* Perform some initialization to restart a program */
 #ifdef USE_RAMDISK
@@ -95,8 +97,8 @@ void restart() {
 
 	/* Set the initial instruction pointer. */
 	cpu.eip = ENTRY_START;
-    cpu.eflags.val = 0x2;
-
+    // cpu.eflags.val = 0x2;
+	init_eflags();
 	/* Initialize DRAM. */
 	init_ddr3();
 
