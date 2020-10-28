@@ -1,11 +1,11 @@
 #include "cpu/exec/template-start.h"
 
-#define instr js
+#define instr jl
 
 static void do_execute(){
     DATA_TYPE_S displacement = op_src -> val;
-	print_asm("js %x", cpu.eip + 1 + DATA_BYTE + displacement);
-	if(cpu.eflags.SF == 1) cpu.eip += displacement;
+    print_asm("jl %x", cpu.eip + 1 + DATA_BYTE + displacement);
+    if(cpu.ZF == 0 && cpu.SF != cpu.OF) cpu.eip += displacement;
 }
 
 make_instr_helper(i)
