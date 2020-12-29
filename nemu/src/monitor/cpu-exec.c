@@ -28,22 +28,22 @@ static inline void push_r2stack(int val){
 
 void raise_intr(uint8_t NO){
 	Assert((NO<<3)<=cpu.idtr.limit,"Wrong Interrupt id!");
-	Gate_Descriptor now_gate;
-	idt_desc = &now_gate;
+	Sreg_Descriptor now_gate;
+	sreg_desc = &now_gate;
 
 	lnaddr_t addr = cpu.idtr.base + (NO << 3);
-	idt_desc -> part1 = lnaddr_read(addr, 4);
-	idt_desc -> part2 = lnaddr_read(addr + 4, 4);
+	sreg_desc -> part1 = lnaddr_read(addr, 4);
+	sreg_desc -> part2 = lnaddr_read(addr + 4, 4);
 
 	push_r2stack(cpu.eflags);
 	push_r2stack(cpu.cs.selector);
 	push_r2stack(cpu.eip);
 
-	cpu.cs.selector = idt_desc -> selector;
+	cpu.cs.selector = sreg_desc -> selector;
 
 	current_sreg = R_CS;
 	sreg_load(R_CS);
-	cpu.eip = cpu.cs.base + idt_desc -> offset1 + (idt_desc -> offset2 << 16);
+	cpu.eip = cpu.cs.base + sreg_desc -> offset1 + (sreg_desc -> offset2 << 16);
 
 	longjmp(jbuf, 1);
 
