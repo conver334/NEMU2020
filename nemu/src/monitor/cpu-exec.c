@@ -36,14 +36,14 @@ void raise_intr(uint8_t NO){
 	sreg_desc -> part2 = lnaddr_read(addr + 4, 4);
 
 	push_r2stack(cpu.eflags);
-	push_r2stack(cpu.cs.selector);
+	push_r2stack(cpu.cs.base1);
 	push_r2stack(cpu.eip);
 
-	cpu.cs.selector = sreg_desc -> selector;
+	cpu.cs.base1 = sreg_desc -> base1;
 
 	current_sreg = R_CS;
 	sreg_load(R_CS);
-	cpu.eip = cpu.cs.base + sreg_desc -> offset1 + (sreg_desc -> offset2 << 16);
+	cpu.eip = cpu.cs.base + sreg_desc -> limit1 + (sreg_desc -> offset2 << 16);
 
 	longjmp(jbuf, 1);
 
