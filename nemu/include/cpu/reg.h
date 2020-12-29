@@ -235,6 +235,10 @@ typedef struct {
 	};
 
 	CR3 cr3;
+	struct IDTR{
+		uint32_t base;
+		uint16_t limit;
+	}idtr;
 
 } CPU_state;
 

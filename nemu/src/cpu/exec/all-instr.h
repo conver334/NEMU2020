@@ -58,3 +58,13 @@
 #include "data-mov/lgdt.h"
 #include "logic/cld.h"
 #include "logic/std.h"
+
+
+#include "data-mov/lidt.h"
+#include "intr/intr.h"
+
+
+
+#include "data-mov/cmovcc.h"
+#include "data-mov/pusha.h"
+#include "data-mov/popa.h"
