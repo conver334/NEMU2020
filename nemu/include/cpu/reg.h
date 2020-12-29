@@ -1,3 +1,4 @@
+
 #ifndef __REG_H__
 #define __REG_H__
 
@@ -63,8 +64,6 @@ typedef struct {
 
 		};
 	};
-
-	bool INTR;
 
 	swaddr_t eip;
 
