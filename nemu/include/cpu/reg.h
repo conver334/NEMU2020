@@ -64,7 +64,7 @@ typedef struct {
 
 		};
 	};
-
+	bool INTR;
 	swaddr_t eip;
 
 	struct GDTR
