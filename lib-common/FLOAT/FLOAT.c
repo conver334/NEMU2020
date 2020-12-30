@@ -17,7 +17,30 @@ FLOAT F_mul_F(FLOAT a, FLOAT b) {
 	int64_t scale = ((int64_t)a * (int64_t)b) >> 16;
 	return scale;
 }
+/*
+FLOAT F_div_F(FLOAT a, FLOAT b) {
+	 Dividing two 64-bit integers needs the support of another library
+	 * `libgcc', other than newlib. It is a dirty work to port `libgcc'
+	 * to NEMU. In fact, it is unnecessary to perform a "64/64" division
+	 * here. A "64/32" division is enough.
+	 *
+	 * To perform a "64/32" division, you can use the x86 instruction
+	 * `div' or `idiv' by inline assembly. We provide a template for you
+	 * to prevent you from uncessary details.
+	 *
+	 *     asm volatile ("??? %2" : "=a"(???), "=d"(???) : "r"(???), "a"(???), "d"(???));
+	 *
+	 * If you want to use the template above, you should fill the "???"
+	 * correctly. For more information, please read the i386 manual for
+	 * division instructions, and search the Internet about "inline assembly".
+	 * It is OK not to use the template above, but you should figure
+	 * out another way to perform the division.
+	 
 
+        FLOAT q, r;
+	asm volatile("idiv %2" : "=a"(q), "=d"(r) : "r"(b), "a"(a << 16), "d"(a >> 16));
+	return q;
+}*/
 FLOAT F_div_F(FLOAT a, FLOAT b) {
 	/* Dividing two 64-bit integers needs the support of another library
 	 * `libgcc', other than newlib. It is a dirty work to port `libgcc'
@@ -36,10 +59,26 @@ FLOAT F_div_F(FLOAT a, FLOAT b) {
 	 * It is OK not to use the template above, but you should figure
 	 * out another way to perform the division.
 	 */
-
-        FLOAT q, r;
-	asm volatile("idiv %2" : "=a"(q), "=d"(r) : "r"(b), "a"(a << 16), "d"(a >> 16));
-	return q;
+	int sign = 1;
+	if(a < 0){
+		sign = -sign;
+		a = -a;
+	}
+	if(b < 0){
+		sign = -sign;
+		b = -b;
+	}
+	int result = a / b, c = a % b, i;
+	for(i = 0; i < 16; i++){
+		c <<= 1;
+		result <<= 1;
+		if(c >= b){
+			c -= b;
+			result++;
+		}
+	}
+	result *= sign;
+	return result;
 }
 
 FLOAT f2F(float a) {
