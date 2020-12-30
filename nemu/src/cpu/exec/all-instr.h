@@ -64,7 +64,7 @@
 #include "intr/intr.h"
 
 
-
+#include "logic/sete.h"
 #include "data-mov/cmovcc.h"
 #include "data-mov/pusha.h"
 #include "data-mov/popa.h"
