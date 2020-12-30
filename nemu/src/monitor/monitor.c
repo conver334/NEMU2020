@@ -40,6 +40,7 @@ void init_monitor(int argc, char *argv[]) {
 
 	/* Initialize the watchpoint pool. */
 	init_wp_pool();
+
 	init_device();
 
 	init_sdl();
@@ -79,6 +80,11 @@ static void load_entry() {
 	assert(ret == 1);
 	fclose(fp);
 }
+
+static void init_eflags() {
+	cpu.eflags = 2;
+}
+
 static void init_cr0(){
 	cpu.cr0.protect_enable = 0;
 	cpu.cr0.paging = 0;
@@ -88,9 +94,7 @@ static void init_CS(){
 	cpu.cs.base = 0;
 	cpu.cs.limit = 0xffffffff;
 }
-static void init_eflags() {
-	cpu.eflags = 2;
-}
+
 void restart() {
 	/* Perform some initialization to restart a program */
 #ifdef USE_RAMDISK
@@ -103,15 +107,16 @@ void restart() {
 
 	/* Set the initial instruction pointer. */
 	cpu.eip = ENTRY_START;
-    // cpu.eflags.val = 0x2;
 	init_eflags();
+
+	init_cr0();
+
 	/* Initialize DRAM. */
 	init_ddr3();
 
-	/*Initialize Cache*/
+	/* Initialize Cache. */
 	init_cache();
 
-	init_cr0();
 	init_CS();
 
 	init_tlb();
