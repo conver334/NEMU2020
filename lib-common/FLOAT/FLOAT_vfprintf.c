@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "FLOAT.h"
+#include <sys/mman.h>
 
 extern char _vfprintf_internal;
 extern char _fpmaxtostr;
+extern char _ppfs_setargs;
 extern int __stdio_fwrite(char *buf, int len, FILE *stream);
 
 __attribute__((used)) static int format_FLOAT(FILE *stream, FLOAT f) {
@@ -16,7 +18,25 @@ __attribute__((used)) static int format_FLOAT(FILE *stream, FLOAT f) {
 	 */
 
 	char buf[80];
-	int len = sprintf(buf, "0x%08x", f);
+	// int len = sprintf(buf, "0x%08x", f);
+	int sign = (f >> 31) & 0x1;
+	if(sign == 1){
+		f = (~f) + 1;
+	}
+	int x = (int)(f >> 16);
+	int y = 0, origin = 1e8, i;
+	for(i = 15; i >= 0; i--){
+		origin >>= 1;
+		if((1 << i) & f) y += origin;
+	}
+	while(y >= 1000000) y /= 10;
+	int len;
+	if(sign){
+		len = sprintf(buf, "-%d.%06d", x, y);
+	}
+	else{
+		len = sprintf(buf, "%d.%06d", x, y);
+	}
 	return __stdio_fwrite(buf, len, stream);
 }
 
@@ -26,6 +46,30 @@ static void modify_vfprintf() {
 	 * is the code section in _vfprintf_internal() relative to the
 	 * hijack.
 	 */
+	int address = (int)(&_vfprintf_internal);
+	// mprotect((void *)((address + 0x306 - 0x64) & 0xfffff000), 4096 * 2, PROT_READ | PROT_WRITE | PROT_EXEC);
+
+	char *p = (char *)(address + 0x306 - 0xa);
+	*p = 0xff; // push opcode
+	p = (char *)(address + 0x306 - 0x9);
+	*p = 0x32; //ModR/M
+	p = (char *)(address + 0x306 - 0x8);
+	*p = 0x90; //nop
+
+	p = (char *)(address + 0x306 - 0xb);
+	*p = 0x8;	
+
+	p = (char *)(address + 0x306 - 29);
+	*p = 0x90;
+	p = (char *)(address + 0x306 - 30);
+	*p = 0x90;
+	p = (char *)(address + 0x306 - 33);
+	*p = 0x90;
+	p = (char *)(address + 0x306 - 34);
+	*p = 0x90; 
+
+	int *position = (int *)(address + 0x307);
+	*position += (int)format_FLOAT - (int)(&_fpmaxtostr);
 
 #if 0
 	else if (ppfs->conv_num <= CONV_A) {  /* floating point */
@@ -72,6 +116,13 @@ static void modify_ppfs_setargs() {
 	 * Below is the code section in _vfprintf_internal() relative to
 	 * the modification.
 	 */
+	int address = (int)(&_ppfs_setargs);
+	char *position = (char *)(address + 0x71);
+	*position = 0xeb;
+	position = (char *)(address + 0x72);
+	*position = 0x30;
+	position = (char *)(address + 0x73);
+	*position = 0x90;
 
 #if 0
 	enum {                          /* C type: */
