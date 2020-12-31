@@ -2,17 +2,13 @@
 #include "burst.h"
 #include "misc.h"
 #include "memory/cache.h"
+
 /* Simulate the (main) behavor of DRAM.
  * Although this will lower the performace of NEMU, it makes
  * you clear about how DRAM perform read/write operations.
  * Note that cross addressing is not simulated.
  */
-/*
-资料补充：
-1.主存（Main memory）:即电脑内部最主要的存储器，用来加载各式各样的程序与数据以供CPU直接运行与运用。一般由DRAM构成
-2.DRAM:动态随机存取存储器（Dynamic Random Access Memory，DRAM）.主要的作用原理是利用电容内存储电荷的多寡来代表一个二进制比特（bit）是1还是0。由于在现实中晶体管会有漏电电流的现象，导致电容上所存储的电荷数量并不足以正确的判别数据，而导致数据毁损。因此对于DRAM来说，周期性地充电是一个无可避免的要件。由于这种需要定时刷新的特性，因此被称为“动态”存储器。相对来说，静态存储器（SRAM）只要存入数据后，纵使不刷新也不会丢失记忆。
 
-*/
 #define COL_WIDTH 10
 #define ROW_WIDTH 10
 #define BANK_WIDTH 3
@@ -77,6 +73,9 @@ static void ddr3_read(hwaddr_t addr, void *data) {
 	memcpy(data, rowbufs[rank][bank].buf + col, BURST_LEN);
 }
 
+void ddr3_read_ref(hwaddr_t addr, void *data){
+	ddr3_read(addr, data);
+}
 
 static void ddr3_write(hwaddr_t addr, void *data, uint8_t *mask) {
 	Assert(addr < HW_MEM_SIZE, "physical address %x is outside of the physical memory!", addr);
@@ -101,12 +100,11 @@ static void ddr3_write(hwaddr_t addr, void *data, uint8_t *mask) {
 	/* write back to dram */
 	memcpy(dram[rank][bank][row], rowbufs[rank][bank].buf, NR_COL);
 }
-void ddr3_read_me(hwaddr_t addr, void *data) {
-	 ddr3_read( addr, data) ;
+
+void ddr3_write_ref(hwaddr_t addr, void *data, uint8_t *mask){
+	ddr3_write(addr, data, mask);
 }
-void ddr3_write_me(hwaddr_t addr, void *data, uint8_t *mask) {
-	ddr3_write( addr,data, mask) ;
-}
+
 uint32_t dram_read(hwaddr_t addr, size_t len) {
 	uint32_t offset = addr & BURST_MASK;
 	uint8_t temp[2 * BURST_LEN];

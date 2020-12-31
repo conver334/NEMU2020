@@ -4,7 +4,6 @@
 #include "nemu.h"
 #include "cpu/decode/operand.h"
 
-
 extern uint8_t current_sreg;
 
 /* All function defined with 'make_helper' return the length of the operation. */

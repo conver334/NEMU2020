@@ -6,9 +6,10 @@
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include "memory.h"
+#include <elf.h>
 
 void cpu_exec(uint32_t);
-// void display_reg();
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 char* rl_gets() {
@@ -28,32 +29,28 @@ char* rl_gets() {
 	return line_read;
 }
 
-/* TODO: Add single step */
-static int cmd_si(char *args) {
-	char *arg = strtok(NULL, " ");
-	int i = 1;
-
-	if(arg != NULL) {
-		sscanf(arg, "%d", &i);
-	}
-	cpu_exec(i);
+static int cmd_c(char *args) {
+	cpu_exec(-1);
 	return 0;
 }
 
-/* TODO: Add info command */
-// static int cmd_info(char *args) {
-// 	char *arg = strtok(NULL, " ");
+static int cmd_q(char *args) {
+	return -1;
+}
 
-// 	if(arg != NULL) {
-// 		if(strcmp(arg, "r") == 0) {
-// 			display_reg();
-// 		}
-// 		else if(strcmp(arg, "w") == 0) {
-// 			list_watchpoint();
-// 		}
-// 	}
-// 	return 0;
-// }
+static int cmd_si(char *args) {
+	if(args == NULL){
+		cpu_exec(1);
+	}
+	else {
+		int num, ok;
+		ok = sscanf(args, "%d", &num);
+		if(ok == 1) cpu_exec(num);
+		else printf("parameter fault\n");
+	}
+	return 0;
+}
+
 static int cmd_info(char *args) {
 	if(args == NULL || strlen(args) != 1){
 		printf("parameter fault\n");
@@ -66,8 +63,7 @@ static int cmd_info(char *args) {
 			}
 		}
 		else if(args[0] == 'w'){
-			// print_wp();
-			list_watchpoint();
+			print_wp();
 		}
 		else {
 			printf("parameter fault\n");
@@ -76,105 +72,88 @@ static int cmd_info(char *args) {
 	return 0;
 }
 
-
-
-/* Add examine memory */
 static int cmd_x(char *args) {
 	current_sreg = R_DS;
-	char *arg = strtok(NULL, " ");
-	int n;
-	swaddr_t addr;
-	int i;
-
-	if(arg != NULL) {
-		sscanf(arg, "%d", &n);
-
-		bool success;
-		addr = expr(arg + strlen(arg) + 1, &success);
-		if(success) { 
-			for(i = 0; i < n; i ++) {
-				if(i % 4 == 0) {
-					printf("0x%08x: ", addr);
-				}
-
-				printf("0x%08x ", swaddr_read(addr, 4));
-				addr += 4;
-				if(i % 4 == 3) {
-					printf("\n");
-				}
+	int num, addr;
+	char saddr[32];
+	int ok = sscanf(args, "%d %s", &num, saddr);
+	if(ok != 2){
+		printf("parameter fault\n");
+	}
+	else {
+		bool success = true;
+		addr = expr(saddr, &success);
+		int i, j;
+		for(i = addr; i < addr + num * 4; i += 4){
+			printf("%08x\t", i);
+			for(j = 0; j <= 3; j++){
+				printf("%02x%c", swaddr_read(i + j, 1), j == 3 ? '\n' : ' ');
 			}
-			printf("\n");
 		}
-		else { printf("Bad expression\n"); }
-
 	}
 	return 0;
 }
 
-/* Add expression evaluation  */
 static int cmd_p(char *args) {
-	bool success;
-
-	if(args) {
-		uint32_t r = expr(args, &success);
-		if(success) { printf("0x%08x(%d)\n", r, r); }
-		else { printf("Bad expression\n"); }
+	if(args == NULL) {
+		printf("No expression entered\n");
+	}
+	else {
+		int ans; bool ok = true;
+		ans = expr(args, &ok);
+		if(ok) printf("%u\n", ans);
 	}
 	return 0;
 }
 
-/* Add set watchpoint  */
 static int cmd_w(char *args) {
-	if(args) {
-		int NO = set_watchpoint(args);
-		if(NO != -1) { printf("Set watchpoint #%d\n", NO); }
-		else { printf("Bad expression\n"); }
+	if(args == NULL) {
+		printf("No expression entered\n");
+	}
+	else {
+		bool ok = true;
+		int val = expr(args, &ok);
+		if(ok){
+			WP* wp = new_wp();
+			strcpy(wp -> str, args);
+			wp -> value = val;
+			printf("wp_pool id:%d is used for watchpoint, expression = %s\n", wp -> NO, wp -> str);
+		}
 	}
 	return 0;
 }
 
-/* Add delete watchpoint */
-static int cmd_d(char *args) {
-	int NO;
-	sscanf(args, "%d", &NO);
-	if(!delete_watchpoint(NO)) {
-		printf("Watchpoint #%d does not exist\n", NO);
+static int cmd_d(char* args) {
+	int num;
+	int ok = sscanf(args, "%d", &num);
+	if(ok != 1) {
+		printf("input invalid\n");
 	}
-
+	else {
+		delete_wp(num);
+	}
 	return 0;
 }
 
-/* Add display backtrace */
+void get_Function_From_Address(swaddr_t address, char *str);
+
 static int cmd_bt(char *args) {
 	current_sreg = R_SS;
-	const char* find_fun_name(uint32_t eip);
-	struct {
-		swaddr_t prev_ebp;
-		swaddr_t ret_addr;
-		uint32_t args[4];
-	} sf;
-
-	uint32_t ebp = cpu.ebp;
-	uint32_t eip = cpu.eip;
-	int i = 0;
-	
-	while(ebp != 0) {
-		sf.args[0] = swaddr_read(ebp + 8, 4);
-		sf.args[1] = swaddr_read(ebp + 12, 4);
-		sf.args[2] = swaddr_read(ebp + 16, 4);
-		sf.args[3] = swaddr_read(ebp + 20, 4);
-
-		printf("#%d 0x%08x in %s (0x%08x 0x%08x 0x%08x 0x%08x)\n", i, eip, find_fun_name(eip), sf.args[0], sf.args[1], sf.args[2], sf.args[3]);
-		i ++;
-		eip = swaddr_read(ebp + 4, 4);
-		ebp = swaddr_read(ebp, 4);
+	swaddr_t cur_ebp = reg_l(R_EBP), cur_ret = cpu.eip;
+	int cnt = 0, i;
+	char name[50];
+	while(cur_ebp) {
+		get_Function_From_Address(cur_ret, name);
+		if(name[0] == '\0') break;
+		printf("#%d 0x%x: %s (", ++cnt, cur_ret, name);
+		for(i = 0; i <= 3; i++) {
+			printf("%d%c", swaddr_read(cur_ebp + 8 + i * 4, 4), i == 3 ? ')' : ',');
+		}
+		cur_ret = swaddr_read(cur_ebp + 4, 4), cur_ebp = swaddr_read(cur_ebp, 4);
+		printf("\n");
 	}
 	return 0;
 }
-
-/*
-add  addr
-*/
 hwaddr_t page_translate_without_assert(lnaddr_t addr, int* success);
 static int cmd_page(char *args){
 	if(args == NULL) {
@@ -198,15 +177,6 @@ static int cmd_page(char *args){
 	return 0;
 }
 
-static int cmd_c(char *args) {
-	cpu_exec(-1);
-	return 0;
-}
-
-static int cmd_q(char *args) {
-	return -1;
-}
-
 static int cmd_help(char *args);
 
 static struct {
@@ -216,17 +186,17 @@ static struct {
 } cmd_table [] = {
 	{ "help", "Display informations about all supported commands", cmd_help },
 	{ "c", "Continue the execution of the program", cmd_c },
-	{ "q", "Exit NEMU", cmd_q }, 
+	{ "q", "Exit NEMU", cmd_q },
+	{"si", "one step execute", cmd_si},
+	{"info", "get information", cmd_info},
+	{"x", "memory scan", cmd_x},
+	{"p", "calculate expression", cmd_p},
+	{"w", "use watchpoint", cmd_w},
+	{"d", "delete watchpoint", cmd_d},
+	{"bt", "print stackframe", cmd_bt},
+	{"page", "print result of page translation", cmd_page},
 
 	/* TODO: Add more commands */
-        { "si", "Single step", cmd_si },
-        { "info", "info r - print register values; info w - show watch point state", cmd_info },
-	{ "x", "Examine memory", cmd_x },
-        { "p", "Evaluate the value of expression", cmd_p },
-	{ "w", "Set watchpoint", cmd_w },
-	{ "d", "Delete watchpoint", cmd_d },
-	{ "bt", "Display backtrace", cmd_bt },
-	{"page", "print result of page translation", cmd_page}
 
 };
 

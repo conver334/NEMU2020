@@ -105,17 +105,8 @@ void cpu_exec(volatile uint32_t n) {
 #endif
 
 		/* TODO: check watchpoints here. */
-		/* TODO: check watchpoints here. */
-        WP *wp = scan_watchpoint();
-		if(wp != NULL) {
-			puts(asm_buf);
-			printf("\n\nHint watchpoint %d at address 0x%08x, expr = %s\n", wp->NO, cpu.eip - instr_len, wp->expr);
-			printf("old value = %#08x\nnew value = %#08x\n", wp->old_val, wp->new_val);
-			wp->old_val = wp->new_val;
-			return;
-		}
+		if(check_watchpoints()) nemu_state = STOP;
 
-		if(nemu_state != RUNNING) { return; }
 #ifdef HAS_DEVICE
 		extern void device_update();
 		device_update();

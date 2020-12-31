@@ -3,10 +3,14 @@
 #include "burst.h"
 #include "nemu.h"
 #include <string.h>
+#include "cpu/reg.h"
+#include "memory/tlb.h"
 
 uint32_t dram_read(hwaddr_t, size_t);
 void dram_write(hwaddr_t, size_t, uint32_t);
-
+int is_mmio(hwaddr_t addr);
+void mmio_write(hwaddr_t addr, size_t len, uint32_t data, int map_NO);
+uint32_t mmio_read(hwaddr_t addr, size_t len, int map_NO);
 extern uint8_t current_sreg;
 
 /* Memory accessing interfaces */
@@ -36,7 +40,6 @@ uint32_t hwaddr_read(hwaddr_t addr, size_t len) {
 	}
 	int tmp = 0;
 	uint32_t ans = unalign_rw(ret + tmp, 4) & (~0u >> ((4 - len) << 3));
-	// print(ans);
 	return ans;
 	// return dram_read(addr, len) & (~0u >> ((4 - len) << 3));
 }

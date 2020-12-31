@@ -1,6 +1,7 @@
 #include "common.h"
 #include "memory.h"
 #include <string.h>
+#include <stdio.h>
 
 #define VMEM_ADDR 0xa0000
 #define SCR_SIZE (320 * 200)
@@ -16,6 +17,7 @@ void create_video_mapping() {
 	 * some page tables to create this mapping.
 	 */
 	// panic("please implement me");
+
 	PDE *pde = (PDE *)va_to_pa(get_updir());
 	pde[0].val = make_pde(va_to_pa(vm_pt));
 	int tot = SCR_SIZE / PAGE_SIZE;
@@ -38,6 +40,7 @@ void video_mapping_read_test() {
 	int i;
 	uint32_t *buf = (void *)VMEM_ADDR;
 	for(i = 0; i < SCR_SIZE / 4; i ++) {
+		// if(i != buf[i]) printf("%d %d\n", i, buf[i]);
 		assert(buf[i] == i);
 	}
 }

@@ -3,8 +3,8 @@
 
 #include "common.h"
 #include "memory/memory.h"
-#include "memory/cache.h"
 #include "cpu/reg.h"
-#include "cpu/eflags.h"
+#include "memory/cache.h"
 #include "memory/tlb.h"
+
 #endif

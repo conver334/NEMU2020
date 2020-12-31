@@ -90,6 +90,10 @@ make_group(group7,
 	inv, inv, lgdt_rm_v, lidt_rm_v, 
 	inv, inv, inv, inv)
 
+/* 0xba */
+make_group(group8,
+	inv, inv, inv, inv, 
+	bt_i2rm_v, inv, inv, inv)
 
 /* TODO: Add more instructions!!! */
 
@@ -122,7 +126,7 @@ helper_fun opcode_table [256] = {
 /* 0x64 */	inv, inv, operand_size, inv,
 /* 0x68 */	push_i_v, imul_i_rm2r_v, push_i_b, imul_si_rm2r_v,
 /* 0x6c */	inv, inv, inv, inv,
-/* 0x70 */	inv, inv, inv, inv,
+/* 0x70 */	inv, inv, jb_i_b, jae_i_b,
 /* 0x74 */	je_i_b, jne_i_b, jbe_i_b, ja_i_b,
 /* 0x78 */	js_i_b, jns_i_b, inv, inv,
 /* 0x7c */	jl_i_b, jge_i_b, jle_i_b, jg_i_b,
@@ -151,12 +155,12 @@ helper_fun opcode_table [256] = {
 /* 0xd8 */	inv, inv, inv, inv,
 /* 0xdc */	inv, inv, inv, inv,
 /* 0xe0 */	inv, inv, inv, inv,
-/* 0xe4 */	inv, inv, inv, inv,
+/* 0xe4 */	in_i2a_b, in_i2a_v, out_i2a_b, out_i2a_v,
 /* 0xe8 */	call_i_v, jmp_i_v, ljmp, jmp_i_b,
-/* 0xec */	inv, inv, inv, inv,
+/* 0xec */	in_b, in_v, out_b, out_v,
 /* 0xf0 */	inv, inv, repnz, rep,
-/* 0xf4 */	inv, inv, group3_b, group3_v,
-/* 0xf8 */	inv, inv, cli, inv,
+/* 0xf4 */	hlt, inv, group3_b, group3_v,
+/* 0xf8 */	inv, inv, cli, sti,
 /* 0xfc */	cld, std, group4, group5
 };
 
@@ -178,9 +182,9 @@ helper_fun _2byte_opcode_table [256] = {
 /* 0x38 */	inv, inv, inv, inv, 
 /* 0x3c */	inv, inv, inv, inv, 
 /* 0x40 */	inv, inv, inv, inv, 
-/* 0x44 */	inv, inv, inv, inv,
+/* 0x44 */	cmove_rm2r_v, inv, inv, inv,
 /* 0x48 */	inv, inv, inv, inv, 
-/* 0x4c */	inv, inv, inv, inv, 
+/* 0x4c */	inv, inv, cmovle_rm2r_v, inv, 
 /* 0x50 */	inv, inv, inv, inv, 
 /* 0x54 */	inv, inv, inv, inv,
 /* 0x58 */	inv, inv, inv, inv, 
@@ -193,7 +197,7 @@ helper_fun _2byte_opcode_table [256] = {
 /* 0x74 */	inv, inv, inv, inv,
 /* 0x78 */	inv, inv, inv, inv, 
 /* 0x7c */	inv, inv, inv, inv, 
-/* 0x80 */	inv, inv, inv, inv,
+/* 0x80 */	inv, inv, jb_i_v, jae_i_v,
 /* 0x84 */	je_i_v, jne_i_v, jbe_i_v, ja_i_v,
 /* 0x88 */	js_i_v, jns_i_v, inv, inv, 
 /* 0x8c */	jl_i_v, jge_i_v, jle_i_v, jg_i_v, 
@@ -201,13 +205,13 @@ helper_fun _2byte_opcode_table [256] = {
 /* 0x94 */	sete_rm_b, setne_rm_b, inv, inv,
 /* 0x98 */	inv, inv, inv, inv, 
 /* 0x9c */	inv, inv, inv, inv, 
-/* 0xa0 */	inv, inv, inv, inv, 
+/* 0xa0 */	inv, inv, inv, bt_r2rm_v	, 
 /* 0xa4 */	inv, inv, inv, inv,
 /* 0xa8 */	inv, inv, inv, inv,
 /* 0xac */	shrdi_v, inv, inv, imul_rm2r_v,
 /* 0xb0 */	inv, inv, inv, inv, 
 /* 0xb4 */	inv, inv, movzb_v, movzw_l, 
-/* 0xb8 */	inv, inv, inv, inv,
+/* 0xb8 */	inv, inv, group8, inv,
 /* 0xbc */	inv, inv, movsb_v, movsw_l,
 /* 0xc0 */	inv, inv, inv, inv,
 /* 0xc4 */	inv, inv, inv, inv,

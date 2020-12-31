@@ -59,12 +59,21 @@
 #include "logic/cld.h"
 #include "logic/std.h"
 
-
 #include "data-mov/lidt.h"
+
 #include "intr/intr.h"
 
-
-#include "logic/sete.h"
 #include "data-mov/cmovcc.h"
 #include "data-mov/pusha.h"
 #include "data-mov/popa.h"
+#include "logic/sete.h"
+
+#include "IO/in.h"
+#include "IO/out.h"
+#include "IO/hlt.h"
+#include "IO/sti.h"
+#include "IO/jae.h"
+#include "IO/jb.h"
+#include "IO/cmove.h"
+#include "IO/cmovle.h"
+#include "IO/bt.h"
